@@ -7,4 +7,4 @@
     1、打开main.py，所有参数在该文件设置
     2、运行 main.py 即可
 # 代码详解
-    [详见博客](https://www.baidu.com)
+[详见博客](https://www.baidu.com)
