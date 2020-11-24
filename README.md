@@ -35,3 +35,4 @@ elmo,gpt,bert(以及变种),dssm等等。
       - bert-tf2.x
     - bert-cn
       - bert-tf2.x
+已更新至word2vec中的gensim和tf1.x
