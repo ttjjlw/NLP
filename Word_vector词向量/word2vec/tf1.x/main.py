@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # Author = TJL
 # date:2020/11/23
-import os
+import os,pickle
 import numpy as np
 import argparse,random
 from model import Word2vec
@@ -38,6 +38,8 @@ train = pd.read_csv('./data/train.csv', sep='\t', encoding='utf-8', header=0)
 args.valid_example=np.random.choice(range(0,args.valid_window+1),args.valid_size,replace=False)#repalce=False表示不重复，不重复从0-119选出20个 type array
 print(args)
 args.vocab = get_dictionary(train.text)
+with open(args.embeddings_save_path+'vocab.pkl','wb') as f:
+    pickle.dump(args.vocab,f)
 args.raw_data=train.text
 print('vocab_size:%d'%len(args.vocab))
 
