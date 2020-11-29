@@ -6,7 +6,7 @@
 
 
 from gensim.models import word2vec,KeyedVectors
-import logging,collections,pickle,os,argparse
+import logging,collections,pickle,os,argparse,json
 import numpy as np
 
 ##训练word2vec模型
@@ -66,7 +66,7 @@ def load_pretrain_model(model_dir):
     # print(1)
 def get_vocab_and_embed(args):
     word2id={'<pad>':0}
-    index=1
+    index=0
     embeddings=[]
     embeddings.append([0]*args.embed_dim)
     with open (args.embed_path_txt,'r', encoding='utf-8') as f:
@@ -76,7 +76,7 @@ def get_vocab_and_embed(args):
                 continue
             word=line.strip().split()[0]
             vector=line.strip().split()[1:]
-            word2id[word]=index
+            word2id[word]=index+1
             index+=1
             try:
                 assert len(vector)==args.embed_dim
@@ -86,10 +86,12 @@ def get_vocab_and_embed(args):
     embeddings=np.array(embeddings)
     print('embed_txt的shape为：({}*{})'.format(index,args.embed_dim))
     print('embed_pkl的shape为：{}'.format(embeddings.shape))
+    print('embed_pkl的index为0的位置加了<pad>的向量，所以比embed_txt多1')
+    print('vocab的长度: %d'%len(word2id))
     with open(args.embed_path_pkl,'wb') as p:
         pickle.dump(embeddings,p)
-    with open(args.vocab_path,'wb') as p1:
-        pickle.dump(word2id,p1)
+    with open(args.vocab_path,'w',encoding='utf-8') as p1:
+        json.dump(word2id,p1)
     print('完成！')
 
 if __name__ == '__main__':
@@ -102,7 +104,7 @@ if __name__ == '__main__':
                         help='the save path of word2vec with type txt')
     parser.add_argument('--embed_path_pkl', type=str, default="export/Vector.pkl",
                         help='the save path of word2vec with type pkl,which is array after pickle.load ')
-    parser.add_argument('--vocab_path', type=str, default='export/vocab.pkl', help='the save path of vocab')
+    parser.add_argument('--vocab_path', type=str, default='export/vocab.json', help='the save path of vocab')
     parser.add_argument('--embed_dim', type=int, default=128, help='the dim of word2vec')
     parser.add_argument('--window_size', type=int, default=3, help='window size')
     parser.add_argument('--negative_size', type=int, default=5, help='负采样个数')

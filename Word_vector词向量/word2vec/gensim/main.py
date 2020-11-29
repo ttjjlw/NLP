@@ -15,7 +15,7 @@ parser.add_argument('--train_data_path', type=str, default='data/train_corpus/co
 parser.add_argument('--stop_word_path', type=str, default='data/stop_words.txt',help='the path of stop words file')
 parser.add_argument('--embed_path_txt', type=str, default="export/Vector.txt",help='the save path of word2vec with type txt')
 parser.add_argument('--embed_path_pkl', type=str, default="export/Vector.pkl",help='the save path of word2vec with type pkl,which is array after pickle.load ')
-parser.add_argument('--vocab_path', type=str, default='export/vocab.pkl',help='the save path of vocab')
+parser.add_argument('--vocab_path', type=str, default='export/vocab.json',help='the save path of vocab')
 parser.add_argument('--embed_dim', type=int, default=128,help='the dim of word2vec')
 parser.add_argument('--window_size', type=int, default=3,help='window size')
 parser.add_argument('--negative_size', type=int, default=5,help='负采样个数')

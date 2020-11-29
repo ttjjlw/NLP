@@ -156,7 +156,7 @@ def train(args):
 
 def get_vocab_and_embed(args):
     word2id={'<pad>':0}
-    index=1
+    index=0
     embeddings=[]
     embeddings.append([0]*args.embed_dim)
     with open (args.embed_path_txt,'r', encoding='utf-8') as f:
@@ -166,24 +166,22 @@ def get_vocab_and_embed(args):
                 continue
             word=line.strip().split()[0]
             vector=line.strip().split()[1:]
-            word2id[word]=index
+            word2id[word]=index+1
             index+=1
-            try:
-                assert len(vector)==args.embed_dim
-            except:
-                ValueError('输出的vector的维度不是设置的%s维'%str(args.embed_dim))
+            assert len(vector)==args.embed_dim,'输出的vector的维度不是设置的%s维'%str(args.embed_dim)
             embeddings.append(vector)
     embeddings=np.array(embeddings)
     print('embed_txt的shape为：({}*{})'.format(index,args.embed_dim))
     print('embed_pkl的shape为：{}'.format(embeddings.shape))
+    print('embed_pkl的index为0的位置加了<pad>的向量，所以比embed_txt多1')
+    print('vocab的长度: %d' % len(word2id))
     with open(args.embed_path_pkl,'wb') as p:
         pickle.dump(embeddings,p)
-    with open(args.vocab_path,'wb') as p1:
+    with open(args.vocab_path,'w') as p1:
         pickle.dump(word2id,p1)
     print('完成！')
 
 if __name__ == "__main__":
-    freeze_support()
     # file_path
     parser = argparse.ArgumentParser(description='generate word2vec by gensim')
     parser.add_argument('--raw_data_path', type=str, default='./data/raw_data/',
@@ -194,7 +192,7 @@ if __name__ == "__main__":
                         help='the save path of word2vec with type txt')
     parser.add_argument('--embed_path_pkl', type=str, default="export/Vector.pkl",
                         help='the save path of word2vec with type pkl,which is array after pickle.load ')
-    parser.add_argument('--vocab_path', type=str, default='export/vocab.pkl', help='the save path of vocab')
+    parser.add_argument('--vocab_path', type=str, default='export/vocab.json', help='the save path of vocab')
     parser.add_argument('--embed_dim', type=int, default=128, help='the dim of word2vec')
     parser.add_argument('--x_max', type=int, default=100, help='两个词共现出现的次数大于x_max后，衡量两词相似性的权重不再增加，论文推荐100')
     parser.add_argument('--alpha', type=float, default=0.75,

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('--embed_path_txt', type=str, default="export/Vector.txt",help='the save path of word vector with type txt')
     parser.add_argument('--embed_path_pkl', type=str, default="export/Vector.pkl",help='the save path of word vector with type pkl,which is array after pickle.load ')
     parser.add_argument('--pic_path', type=str, default="export/glove.png",help='the save path of word vector with type pkl,which is array after pickle.load ')
-    parser.add_argument('--vocab_path', type=str, default='export/vocab.pkl',help='the save path of vocab')
+    parser.add_argument('--vocab_path', type=str, default='export/vocab.json',help='the save path of vocab')
     parser.add_argument('--embed_dim', type=int, default=128,help='the dim of word vector')
     parser.add_argument('--x_max', type=int, default=100,help='两个词共现出现的次数大于x_max后，衡量两词相似性的权重不再增加，论文推荐100')
     parser.add_argument('--alpha', type=float, default=0.75,help='两个词共现出现的次数x小于x_max时，衡量两词相似性的权重为(x/x_max)^alpha 论文推荐0.75')
@@ -39,6 +39,7 @@ if __name__ == '__main__':
         get_train_corpus(args.raw_data_path, args.train_data_path,args.stop_word_path)
         train(args)
         get_vocab_and_embed(args)
+        # vec_eval.drawing_and_save_picture(args.pic_path) #可视化
     else:
         vec_eval = VectorEvaluation(args.embed_path_txt)
         vec_eval.get_similar_words("加拿大")
