@@ -6,5 +6,5 @@
     注：可单独只复制gensim该目录下的文件，就可以执行
     1、打开main.py，所有参数在该文件设置(一些不常用的参数，可进入Word2vec.py文件中设置)
     2、运行 main.py 即可
-# 代码详解
-[详见博客](https://www.baidu.com)
+
+

@@ -4,6 +4,10 @@
 要求训练集和测试集分开存储，对于中文的数据必须先分词，对分词后的词用空格符分开，并且将标签连接到每条数据的尾部，标签和句子用分隔符<SEP>分开。具体的如下：
 * 今天 的 天气 真好<SEP>积极
 
+transformer 代码详解见：[NLP【07】transformer原理、实现及如何与词向量做对接进行文本分类（附代码详解）](https://blog.csdn.net/qq_40859560/article/details/110825880)
+rcnn 代码详解见：[NLP【06】RCNN原理及文本分类实战(附代码详解)
+](https://blog.csdn.net/qq_40859560/article/details/110738284)
+
 #### 文件结构介绍
 * config文件：配置各种模型的配置参数
 * data：存放训练集和测试集
