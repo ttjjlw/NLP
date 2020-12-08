@@ -52,7 +52,7 @@ class RcnnModel(BaseModel):
 
         # 将最后一层Bi-LSTM输出的结果分割成前向和后向的输出
         fw_output, bw_output = tf.split(embedded_words, 2, -1)
-
+        #左右两边各补个0
         with tf.name_scope("context"):
             shape = [tf.shape(fw_output)[0], 1, tf.shape(fw_output)[2]]
             context_left = tf.concat([tf.zeros(shape), fw_output[:, :-1]], axis=1, name="context_left")

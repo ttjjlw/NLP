@@ -216,17 +216,14 @@ class TransformerModel(BaseModel):
 
         # 生成位置的索引，并扩张到batch中所有的样本上
         position_index = tf.tile(tf.expand_dims(tf.range(sequence_length), 0), [batch_size, 1])
-
-        # 根据正弦和余弦函数来获得每个位置上的embedding的第一部分
-        position_embedding = np.array([[pos / np.power(10000, (i - i % 2) / embedding_size)
-                                        for i in range(embedding_size)]
-                                       for pos in range(sequence_length)])
-
-        # 然后根据奇偶性分别用sin和cos函数来包装
-        position_embedding[:, 0::2] = np.sin(position_embedding[:, 0::2])
-        position_embedding[:, 1::2] = np.cos(position_embedding[:, 1::2])
-
-        # 将positionEmbedding转换成tensor的格式
+        position_embedding = np.zeros([sequence_length, embedding_size])
+        for pos in range(sequence_length):
+            for i in range(embedding_size):
+                denominator = np.power(10000.0, i/ embedding_size)
+                if i % 2 == 0:
+                    position_embedding[pos][i] = np.sin(pos / denominator)
+                else:
+                    position_embedding[pos][i] = np.cos(pos / denominator)
         position_embedding = tf.cast(position_embedding, dtype=tf.float32)
 
         # 得到三维的矩阵[batchSize, sequenceLen, embeddingSize]

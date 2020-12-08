@@ -91,7 +91,7 @@ def get_vocab_and_embed(args):
     with open(args.embed_path_pkl,'wb') as p:
         pickle.dump(embeddings,p)
     with open(args.vocab_path,'w',encoding='utf-8') as p1:
-        json.dump(word2id,p1)
+        json.dump(word2id,p1,ensure_ascii=False)
     print('完成！')
 
 if __name__ == '__main__':

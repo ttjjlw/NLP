@@ -60,5 +60,5 @@ print('vocab的长度: %d'%len(vocab))
 with open(embed_path_pkl, 'wb') as p:
     pickle.dump(vector, p)
 with open(vocab_path, 'w', encoding='utf-8') as p1:
-    json.dump(vocab, p1)
+    json.dump(vocab, p1,ensure_ascii=False)
 print('完成！')

@@ -193,7 +193,7 @@ class VectorEvaluation(object):
         self.vocab = {w:i for i,w in enumerate(words)}
         self.idex2word = {i:w for w,i in self.vocab.items()} 
 
-    def drawing_and_save_picture(self, picture_path, w_num=10, mode="pca"):
+    def drawing_and_save_picture(self, picture_path, w_num=10, mode="tsne"):
         w_num = min(len(self.vocab), w_num)
         reduce_dim = PCA(n_components=2)
         if mode == "tsne":

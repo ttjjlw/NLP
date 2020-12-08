@@ -13,7 +13,7 @@ def add_specific_word(word_lis):
         jieba.suggest_freq(word, True)
 
 def stopwordslist(filepath):
-    stopwords = [line.strip() for line in open(filepath, 'r').readlines()]
+    stopwords = [line.strip().decode('utf-8') for line in open(filepath, 'rb').readlines()]
     return stopwords
 
 
@@ -39,7 +39,7 @@ def get_train_corpus(raw_data_path, train_data_path,stop_word_path=None,specific
                 result = ' '.join(document_cut)
                 corpus.append(result)
         #  print(result)
-    with open(train_data_path, 'w', encoding='utf-8') as f:
+    with open(train_data_path+'', 'w', encoding='utf-8') as f:
         for line in corpus:
             f.write(line+'\n')  # 读取的方式和写入的方式要一致
 
@@ -48,6 +48,7 @@ def get_train_corpus(raw_data_path, train_data_path,stop_word_path=None,specific
 
 if __name__ == "__main__":
     raw_data_path = 'data/raw_data/'
-    train_data_path = 'data/train_corpus/'
+    train_data_path = 'data/train_corpus/corpus.txt'
+    if not os.path.exists(os.path.dirname(train_data_path)):os.makedirs(os.path.dirname(train_data_path))
     stop_word_path = 'data/stop_words.txt'  # 这里只是样例，可以替换自己的
     get_train_corpus(raw_data_path, train_data_path,stop_word_path)

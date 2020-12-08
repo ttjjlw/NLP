@@ -1,4 +1,4 @@
-import torch, pickle, os,argparse
+import torch, pickle, os,argparse,json
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
@@ -177,8 +177,8 @@ def get_vocab_and_embed(args):
     print('vocab的长度: %d' % len(word2id))
     with open(args.embed_path_pkl,'wb') as p:
         pickle.dump(embeddings,p)
-    with open(args.vocab_path,'w') as p1:
-        pickle.dump(word2id,p1)
+    with open(args.vocab_path,'w',encoding='utf-8') as p1:
+        json.dump(word2id,p1,ensure_ascii=False)
     print('完成！')
 
 if __name__ == "__main__":
