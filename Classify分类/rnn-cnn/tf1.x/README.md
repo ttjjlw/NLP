@@ -5,8 +5,8 @@
 * 今天 的 天气 真好<SEP>积极
 
 transformer 代码详解见：[NLP【07】transformer原理、实现及如何与词向量做对接进行文本分类（附代码详解）](https://blog.csdn.net/qq_40859560/article/details/110825880)
-rcnn 代码详解见：[NLP【06】RCNN原理及文本分类实战(附代码详解)
-](https://blog.csdn.net/qq_40859560/article/details/110738284)
+
+rcnn 代码详解见：[NLP【06】RCNN原理及文本分类实战(附代码详解)](https://blog.csdn.net/qq_40859560/article/details/110738284)
 
 #### 文件结构介绍
 * config文件：配置各种模型的配置参数
