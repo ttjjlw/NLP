@@ -37,7 +37,7 @@ print("train shape =", train_df.shape)
 print("test shape  =", test_df.shape)
 
 # set some global variables
-PATH ="./bert-base-uncased" #如果只填"bert-base-uncased" 它会自动下载（因为本地没找到）
+PATH ="./bert-base-uncased"
 MAX_SEQUENCE_LENGTH = 128
 TOKENIZER = BertWordPieceTokenizer("./bert-base-uncased/vocab.txt", lowercase=True)
 
