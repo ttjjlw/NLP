@@ -27,7 +27,7 @@ import os
 import argparse
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--save_path',type=str,default="../know")
+parser.add_argument('--save_path',type=str,default="./know")
 parser.add_argument('--user_id',type=str,default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
 
 
@@ -38,8 +38,16 @@ args.user_id="MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS
 save_path= args.save_path
 if not os.path.exists(save_path):
     os.makedirs(save_path)
+
 # 打开一个浏览器
-driver = webdriver.Chrome('.././chromedriver')
+option = webdriver.ChromeOptions()
+# 无头模式
+option.add_argument('headless')
+# 沙盒模式运行
+option.add_argument('no-sandbox')
+# 大量渲染时候写入/tmp而非/dev/shm
+option.add_argument('disable-dev-shm-usage')
+driver = webdriver.Chrome('/data/home/jialiangtu/soft/chromediver/chromedriver',options=option)
 # 访问网址
 url="https://www.douyin.com/user/%s"%args.user_id
 driver.get(url)

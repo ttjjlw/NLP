@@ -9,14 +9,15 @@ import argparse
 
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--video_addr',type=str,default=r"D:\code\pycharm\project1\github\video1")
+parser.add_argument('--video_addr',type=str,default="/know")
 parser.add_argument('--video_label',type=str,default='label1,label2')
 parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
 parser.add_argument('--video_describe',type=str,default='视频')
 
 args,_=parser.parse_known_args()
-
-args.video_addr=r"D:\code\pycharm\project1\github\space"
+pwd_dir = os.getcwd()
+print("pwd_dir:",pwd_dir)
+args.video_addr=pwd_dir + args.video_addr
 args.video_label="科技，宇宙，太空，未来"
 args.video_describe="震撼人心的视频"
 
@@ -31,7 +32,8 @@ def publish_bilibili(driver,path_mp4):
 
     # 进入创作者页面，并上传视频
     # driver.refresh()
-    driver.get("https://member.bilibili.com/platform/upload/video/frame")
+    response=driver.get("https://member.bilibili.com/platform/upload/video/frame")
+    print(response.text)
 
     try:
         alert = driver.switch_to.alert()
@@ -104,9 +106,16 @@ def main(args):
     catalog_mp4 = args.video_addr
     # 视频描述
     # time.sleep(10)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("debuggerAddress", args.ip)
-    driver = webdriver.Chrome(executable_path='.././chromedriver',options=options) #
+    option = webdriver.ChromeOptions()
+    option.add_experimental_option("debuggerAddress", args.ip)
+    driver_path = '/data/home/jialiangtu/soft/chromediver/chromedriver'
+    # 无头模式
+    option.add_argument('headless')
+    # 沙盒模式运行
+    option.add_argument('no-sandbox')
+    # 大量渲染时候写入/tmp而非/dev/shm
+    option.add_argument('disable-dev-shm-usage')
+    driver = webdriver.Chrome(executable_path=driver_path,options=option) #
     # driver.maximize_window()
 
     driver.implicitly_wait(10)
@@ -126,8 +135,9 @@ def main(args):
             shutil.move(path_mp4, move_dir)
             idx+=1
             if idx>4:break
-        except:
-            time.sleep(1)
+        except Exception as e:
+            print(e)
+    driver.quit()
     # 封面地址获取
     # path_cover = ""
     # for i in path.iterdir():
