@@ -7,7 +7,8 @@ from selenium.webdriver.common.keys import Keys
 
 import argparse
 
-
+# chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
+#chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox
 parser=argparse.ArgumentParser()
 parser.add_argument('--video_addr',type=str,default="/know")
 parser.add_argument('--video_label',type=str,default='label1,label2')
@@ -42,7 +43,10 @@ def publish_bilibili(driver,path_mp4):
     except:
         pass
     time.sleep(3)
-    driver.switch_to.frame(driver.find_element_by_xpath('//iframe[@name="videoUpload"]'))
+    try:
+        driver.switch_to.frame(driver.find_element_by_xpath('//iframe[@name="videoUpload"]'))
+    except Exception as e:
+        print(e)
     print(path_mp4)
     driver.find_element_by_xpath('//input[@type="file" and contains(@accept,"mp4")]').send_keys(path_mp4)
 
