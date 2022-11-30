@@ -61,4 +61,5 @@ if __name__ == '__main__':
     address='https://v.douyin.com/rfCkjfR/'
     address='https://v.douyin.com/rfCLbd6/'
     address='https://v.douyin.com/rQ8dYBF/'
+    address='https://v.douyin.com/r3YVUAb/'
     dy(address)

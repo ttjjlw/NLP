@@ -26,16 +26,17 @@ from selenium import webdriver
 import os
 import argparse
 
-parser=argparse.ArgumentParser()
-parser.add_argument('--save_path',type=str,default="./know")
-parser.add_argument('--user_id',type=str,default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
+parser = argparse.ArgumentParser()
+parser.add_argument('--save_path', type=str, default="./football")
+parser.add_argument('--user_id', type=str,
+                    default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
 
+args, _ = parser.parse_known_args()
+args.user_id = "MS4wLjABAAAA8xUmseK9-WQLGOWbjXCpYcJZU0HPGUf9-qOZ1S7oZ0Q"  # 科学旅行号
+args.user_id = "MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS-Q8m5hsLAh"  # 无聊的知识
+args.user_id = "MS4wLjABAAAAM0PAT7Egg1e6KKkmpNXPHoo53ul1BSP_c5GAo-o88D-tkIh__vQAmO5s48iYj4BA"  # 足球
 
-args,_=parser.parse_known_args()
-args.user_id="MS4wLjABAAAA8xUmseK9-WQLGOWbjXCpYcJZU0HPGUf9-qOZ1S7oZ0Q" #科学旅行号
-args.user_id="MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS-Q8m5hsLAh" #无聊的知识
-
-save_path= args.save_path
+save_path = args.save_path
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
@@ -47,12 +48,15 @@ option.add_argument('headless')
 option.add_argument('no-sandbox')
 # 大量渲染时候写入/tmp而非/dev/shm
 option.add_argument('disable-dev-shm-usage')
-driver = webdriver.Chrome('/data/home/jialiangtu/soft/chromediver/chromedriver',options=option)
+driver_path = "../chromedriver"
+driver = webdriver.Chrome(driver_path, options=option)
 # 访问网址
-url="https://www.douyin.com/user/%s"%args.user_id
+url = "https://www.douyin.com/user/%s" % args.user_id
 driver.get(url)
 
 print("翻页")
+
+
 def drop_down():
     for x in range(1, 40, 2):
         time.sleep(1)
@@ -66,7 +70,8 @@ drop_down()
 # 通过css选择去定位元素 ---> 找标签
 # lis = driver.find_elements_by_css_selector('.ECMy_Zdt')
 # lis = driver.find_elements_by_css_selector('#douyin-right-container > div:nth-child(2) > div > div > div:nth-child(2) > div.mwo84cvf > div.wwg0vUdQ > div.UFuuTZ1P > ul')
-lis = driver.find_elements_by_css_selector('#douyin-right-container > div:nth-child(2) > div > div > div:nth-child(2) > div.mwo84cvf > div.wwg0vUdQ > div.UFuuTZ1P > ul li')
+lis = driver.find_elements_by_css_selector(
+    '#douyin-right-container > div:nth-child(2) > div > div > div:nth-child(2) > div.mwo84cvf > div.wwg0vUdQ > div.UFuuTZ1P > ul li')
 # for循环
 for li in lis:
     try:
@@ -78,7 +83,7 @@ for li in lis:
         """
         # 确定url地址
         # url = 'https://www.douyin.com/video/7064550745437146383'
-        item_id=url.split("/")[-1].strip()
+        item_id = url.split("/")[-1].strip()
         url = f'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids={item_id}'
         headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3877.400 QQBrowser/10.8.4506.400',
@@ -101,11 +106,12 @@ for li in lis:
             data = video_response.content  # 获取返回的视频二进制数据
             rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
             new_title = re.sub(rstr, "_", title)  # 过滤不能作为文件名的字符，替换为下划线
-            c = '/%s.mp4' % new_title  # 视频文件的命名
-            if os.path.exists(save_path+ c):
-                print("%s已下载过"%new_title)
+            new_title = '/%s.mp4' % new_title  # 视频文件的命名
+            new_title = new_title.split("#")[0]
+            if os.path.exists(save_path + new_title):
+                print("%s 已下载过" % new_title)
                 continue
-            file = open( save_path+ c, 'wb')  # 创建open对象
+            file = open(save_path + new_title, 'wb')  # 创建open对象
             file.write(data)  # 写入数据
             file.close()  # 关闭
             print(title + "视频下载成功！")

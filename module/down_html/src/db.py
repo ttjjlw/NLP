@@ -112,7 +112,7 @@ def main(args):
     # time.sleep(10)
     option = webdriver.ChromeOptions()
     option.add_experimental_option("debuggerAddress", args.ip)
-    driver_path = '/data/home/jialiangtu/soft/chromediver/chromedriver'
+    driver_path = '../chromedriver'
     # 无头模式
     option.add_argument('headless')
     # 沙盒模式运行
