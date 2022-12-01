@@ -25,36 +25,42 @@ import time
 from selenium import webdriver
 import os
 import argparse
+import subprocess
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--save_path', type=str, default="./football")
+parser.add_argument('--save_path', type=str, default="./know")
+parser.add_argument('--isheadless', type=bool, default=True)
 parser.add_argument('--user_id', type=str,
                     default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
 
 args, _ = parser.parse_known_args()
 args.user_id = "MS4wLjABAAAA8xUmseK9-WQLGOWbjXCpYcJZU0HPGUf9-qOZ1S7oZ0Q"  # 科学旅行号
 args.user_id = "MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS-Q8m5hsLAh"  # 无聊的知识
-args.user_id = "MS4wLjABAAAAM0PAT7Egg1e6KKkmpNXPHoo53ul1BSP_c5GAo-o88D-tkIh__vQAmO5s48iYj4BA"  # 足球
+# args.user_id = "MS4wLjABAAAAM0PAT7Egg1e6KKkmpNXPHoo53ul1BSP_c5GAo-o88D-tkIh__vQAmO5s48iYj4BA"  # 足球
 
 save_path = args.save_path
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
+cmd=r'chrome.exe --remote-debugging-port=9220 --user-data-dir="D:\chromedataco" --headless --disable-gpu --no-sandbox --disable-popup-blocking'
+p = os.popen(cmd)
+# print("p.read(): {}\n".format(p.read()))
+
 # 打开一个浏览器
 option = webdriver.ChromeOptions()
-# 无头模式
-option.add_argument('headless')
-# 沙盒模式运行
-option.add_argument('no-sandbox')
-# 大量渲染时候写入/tmp而非/dev/shm
-option.add_argument('disable-dev-shm-usage')
+option.add_experimental_option("debuggerAddress", "127.0.0.1:9220")
+if args.isheadless:
+    # 无头模式
+    option.add_argument('headless')
+    # 沙盒模式运行
+    option.add_argument('no-sandbox')
+    # 大量渲染时候写入/tmp而非/dev/shm
+    option.add_argument('disable-dev-shm-usage')
 driver_path = "../chromedriver"
 driver = webdriver.Chrome(driver_path, options=option)
 # 访问网址
 url = "https://www.douyin.com/user/%s" % args.user_id
 driver.get(url)
-
-print("翻页")
 
 
 def drop_down():
@@ -65,13 +71,15 @@ def drop_down():
         driver.execute_script(js)
 
 
+time.sleep(5)
+print("翻页")
 drop_down()
 
 # 通过css选择去定位元素 ---> 找标签
 # lis = driver.find_elements_by_css_selector('.ECMy_Zdt')
 # lis = driver.find_elements_by_css_selector('#douyin-right-container > div:nth-child(2) > div > div > div:nth-child(2) > div.mwo84cvf > div.wwg0vUdQ > div.UFuuTZ1P > ul')
-lis = driver.find_elements_by_css_selector(
-    '#douyin-right-container > div:nth-child(2) > div > div > div:nth-child(2) > div.mwo84cvf > div.wwg0vUdQ > div.UFuuTZ1P > ul li')
+lis = driver.find_elements_by_css_selector('#douyin-right-container > div:nth-child(2) > div > div > div:nth-child(2) > div.mwo84cvf > div.wwg0vUdQ > div.UFuuTZ1P > ul li')
+print("视频链接数:", len(lis))
 # for循环
 for li in lis:
     try:
@@ -95,8 +103,8 @@ for li in lis:
         title = html2.json()['item_list'][0]['desc']
         # print(title)
         video_id = html2.json()['item_list'][0]['video']['play_addr']['uri']
-        video_url = f'https://aweme.snssdk.com/aweme/v1/play/?video_id={video_id}&ratio=1080p&line=0'
-        # video_url = html2.json()['item_list'][0]['video']['play_addr']['url_list'][0]
+        # video_url = f'https://aweme.snssdk.com/aweme/v1/play/?video_id={video_id}&ratio=1080p&line=0'
+        video_url = html2.json()['item_list'][0]['video']['play_addr']['url_list'][0]
         html3 = requests.get(video_url, headers=headers)
         # print(html3.url)
 
@@ -106,14 +114,15 @@ for li in lis:
             data = video_response.content  # 获取返回的视频二进制数据
             rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
             new_title = re.sub(rstr, "_", title)  # 过滤不能作为文件名的字符，替换为下划线
-            new_title = '/%s.mp4' % new_title  # 视频文件的命名
             new_title = new_title.split("#")[0]
-            if os.path.exists(save_path + new_title):
+            new_title = '/%s.mp4' % new_title  # 视频文件的命名
+            if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title):
                 print("%s 已下载过" % new_title)
                 continue
             file = open(save_path + new_title, 'wb')  # 创建open对象
             file.write(data)  # 写入数据
             file.close()  # 关闭
-            print(title + "视频下载成功！")
+            print(new_title + " 视频下载成功！")
     except Exception as e:
         print(e)
+driver.quit()

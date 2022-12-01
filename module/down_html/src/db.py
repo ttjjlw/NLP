@@ -14,18 +14,22 @@ parser.add_argument('--video_addr',type=str,default="/know")
 parser.add_argument('--video_label',type=str,default='label1,label2')
 parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
 parser.add_argument('--video_describe',type=str,default='视频')
+parser.add_argument('--isheadless', type=bool, default=False)
 
 args,_=parser.parse_known_args()
 pwd_dir = os.getcwd()
 print("pwd_dir:",pwd_dir)
 args.video_addr=pwd_dir + args.video_addr
-args.video_label="科技，宇宙，太空，未来"
+args.video_label="涨知识"
 args.video_describe="震撼人心的视频"
 
 move_dir=args.video_addr+"_move"
 
 if not os.path.exists(move_dir):
     os.makedirs(move_dir)
+
+
+
 def publish_bilibili(driver,path_mp4):
     '''
      作用：发布b站视频
@@ -33,8 +37,7 @@ def publish_bilibili(driver,path_mp4):
 
     # 进入创作者页面，并上传视频
     # driver.refresh()
-    response=driver.get("https://member.bilibili.com/platform/upload/video/frame")
-    print(response.text)
+    driver.get("https://member.bilibili.com/platform/upload/video/frame")
 
     try:
         alert = driver.switch_to.alert()
@@ -103,6 +106,7 @@ def publish_bilibili(driver,path_mp4):
     # driver.find_element_by_xpath('//button[text()="立即投稿"]').click()
     # driver.find_element_by_xpath('//*[@id="video-up-app"]/div[2]/div/div/div[1]/div[3]/div[15]/div/span').click()
     driver.find_element_by_xpath('//*[@class="submit-add" and text()="立即投稿"]').click()
+    time.sleep(3)
 
 def main(args):
     # 基本信息
@@ -110,15 +114,18 @@ def main(args):
     catalog_mp4 = args.video_addr
     # 视频描述
     # time.sleep(10)
+    cmd = r'chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata"'
+    p = os.popen(cmd)
     option = webdriver.ChromeOptions()
     option.add_experimental_option("debuggerAddress", args.ip)
     driver_path = '../chromedriver'
-    # 无头模式
-    option.add_argument('headless')
-    # 沙盒模式运行
-    option.add_argument('no-sandbox')
-    # 大量渲染时候写入/tmp而非/dev/shm
-    option.add_argument('disable-dev-shm-usage')
+    if args.isheadless:
+        # 无头模式
+        option.add_argument('headless')
+        # 沙盒模式运行
+        option.add_argument('no-sandbox')
+        # 大量渲染时候写入/tmp而非/dev/shm
+        option.add_argument('disable-dev-shm-usage')
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
     # driver.maximize_window()
 
