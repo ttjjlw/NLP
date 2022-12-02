@@ -28,7 +28,7 @@ import argparse
 import subprocess
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--save_path', type=str, default="./know")
+parser.add_argument('--save_path', type=str, default="./dalao")
 parser.add_argument('--isheadless', type=bool, default=True)
 parser.add_argument('--user_id', type=str,
                     default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
@@ -36,6 +36,7 @@ parser.add_argument('--user_id', type=str,
 args, _ = parser.parse_known_args()
 args.user_id = "MS4wLjABAAAA8xUmseK9-WQLGOWbjXCpYcJZU0HPGUf9-qOZ1S7oZ0Q"  # 科学旅行号
 args.user_id = "MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS-Q8m5hsLAh"  # 无聊的知识
+args.user_id = "MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n"  # 商业知道
 # args.user_id = "MS4wLjABAAAAM0PAT7Egg1e6KKkmpNXPHoo53ul1BSP_c5GAo-o88D-tkIh__vQAmO5s48iYj4BA"  # 足球
 
 save_path = args.save_path
@@ -105,6 +106,7 @@ for li in lis:
         video_id = html2.json()['item_list'][0]['video']['play_addr']['uri']
         # video_url = f'https://aweme.snssdk.com/aweme/v1/play/?video_id={video_id}&ratio=1080p&line=0'
         video_url = html2.json()['item_list'][0]['video']['play_addr']['url_list'][0]
+        video_url = video_url.replace("playwm","play")
         html3 = requests.get(video_url, headers=headers)
         # print(html3.url)
 

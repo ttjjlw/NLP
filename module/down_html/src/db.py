@@ -8,11 +8,11 @@ from selenium.webdriver.common.keys import Keys
 import argparse
 
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
-#chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox
+#chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--video_addr',type=str,default="/know")
+parser.add_argument('--video_addr',type=str,default="/dalao")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
 parser.add_argument('--video_describe',type=str,default='视频')
 parser.add_argument('--isheadless', type=bool, default=False)
 
@@ -20,8 +20,8 @@ args,_=parser.parse_known_args()
 pwd_dir = os.getcwd()
 print("pwd_dir:",pwd_dir)
 args.video_addr=pwd_dir + args.video_addr
-args.video_label="涨知识"
-args.video_describe="震撼人心的视频"
+args.video_label="商业大佬"
+args.video_describe="商业大佬"
 
 move_dir=args.video_addr+"_move"
 
@@ -49,7 +49,7 @@ def publish_bilibili(driver,path_mp4):
     try:
         driver.switch_to.frame(driver.find_element_by_xpath('//iframe[@name="videoUpload"]'))
     except Exception as e:
-        print(e)
+        pass
     print(path_mp4)
     driver.find_element_by_xpath('//input[@type="file" and contains(@accept,"mp4")]').send_keys(path_mp4)
 
@@ -84,7 +84,7 @@ def publish_bilibili(driver,path_mp4):
     element.click()
     time.sleep(1)
     driver.find_element_by_xpath('//*[@class="f-item-content" and text()="知识"]').click()
-    driver.find_element_by_xpath('//*[@class="item-main" and text()="科学科普"]').click()
+    driver.find_element_by_xpath('//*[@class="item-main" and text()="社科·法律·心理"]').click()
 
     # 选择标签
     time.sleep(2)
@@ -106,6 +106,7 @@ def publish_bilibili(driver,path_mp4):
     # driver.find_element_by_xpath('//button[text()="立即投稿"]').click()
     # driver.find_element_by_xpath('//*[@id="video-up-app"]/div[2]/div/div/div[1]/div[3]/div[15]/div/span').click()
     driver.find_element_by_xpath('//*[@class="submit-add" and text()="立即投稿"]').click()
+    print("投稿成功")
     time.sleep(3)
 
 def main(args):
@@ -114,7 +115,11 @@ def main(args):
     catalog_mp4 = args.video_addr
     # 视频描述
     # time.sleep(10)
-    cmd = r'chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata"'
+    port=args.ip.split(":")[-1].strip()
+    chrome_dir=r"D:\chromedata%s"%(port)
+    if not os.path.exists(chrome_dir):
+        os.makedirs(chrome_dir)
+    cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking'%(port,port)
     p = os.popen(cmd)
     option = webdriver.ChromeOptions()
     option.add_experimental_option("debuggerAddress", args.ip)
