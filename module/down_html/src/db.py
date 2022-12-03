@@ -10,9 +10,9 @@ import argparse
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 #chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--video_addr',type=str,default="/dalao")
+parser.add_argument('--video_addr',type=str,default="/有趣的故事")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
 parser.add_argument('--video_describe',type=str,default='视频')
 parser.add_argument('--isheadless', type=bool, default=False)
 
@@ -20,8 +20,8 @@ args,_=parser.parse_known_args()
 pwd_dir = os.getcwd()
 print("pwd_dir:",pwd_dir)
 args.video_addr=pwd_dir + args.video_addr
-args.video_label="商业大佬"
-args.video_describe="商业大佬"
+args.video_label=args.video_addr.split('/')[-1].strip()
+
 
 move_dir=args.video_addr+"_move"
 
@@ -30,7 +30,7 @@ if not os.path.exists(move_dir):
 
 
 
-def publish_bilibili(driver,path_mp4):
+def publish_bilibili(args,driver,path_mp4):
     '''
      作用：发布b站视频
     '''
@@ -38,6 +38,12 @@ def publish_bilibili(driver,path_mp4):
     # 进入创作者页面，并上传视频
     # driver.refresh()
     driver.get("https://member.bilibili.com/platform/upload/video/frame")
+    title=path_mp4.split('\\')[-1].split("#")[0]
+    label=path_mp4.split('\\')[-1].split("#")[1:]
+    label=[l for l in label if "dou" not in l and "抖音" not in l]
+    label='#'.join(label)
+    if label:args.label=label
+    args.video_describe = args.video_label
 
     try:
         alert = driver.switch_to.alert()
@@ -74,8 +80,8 @@ def publish_bilibili(driver,path_mp4):
     # driver.find_element_by_xpath('//*[text()="确定"]').click()
 
     # 输入标题
-    # driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').clear()
-    # driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(describe[:describe.index(" #")])
+    driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').clear()
+    driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)
 
     # 选择分类
     element = driver.find_element_by_xpath('//*[contains(@class,"select-container")]')
@@ -84,13 +90,13 @@ def publish_bilibili(driver,path_mp4):
     element.click()
     time.sleep(1)
     driver.find_element_by_xpath('//*[@class="f-item-content" and text()="知识"]').click()
-    driver.find_element_by_xpath('//*[@class="item-main" and text()="社科·法律·心理"]').click()
+    driver.find_element_by_xpath('//*[@class="item-main" and text()="人文历史"]').click()
 
     # 选择标签
     time.sleep(2)
     driver.find_element_by_xpath(
         '//*[text()="参与话题："]/..//*[@class="tag-topic-list"]/span[1]//*[@class="hot-tag-item"]').click()
-    for label in args.video_label.strip().split('，'):
+    for label in args.video_label.strip().split('#'):
         print(label)
         driver.find_element_by_xpath('//input[@placeholder="按回车键Enter创建标签"]').send_keys(label)
         driver.find_element_by_xpath('//input[@placeholder="按回车键Enter创建标签"]').send_keys(Keys.ENTER)
@@ -119,7 +125,10 @@ def main(args):
     chrome_dir=r"D:\chromedata%s"%(port)
     if not os.path.exists(chrome_dir):
         os.makedirs(chrome_dir)
-    cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking'%(port,port)
+    if args.isheadless:
+        cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking'%(port,port)
+    else:
+        cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s"' % (port, port)
     p = os.popen(cmd)
     option = webdriver.ChromeOptions()
     option.add_experimental_option("debuggerAddress", args.ip)
@@ -147,10 +156,10 @@ def main(args):
         print("检查到视频路径：" + path_mp4)
         # publish_bilibili(driver, path_mp4)
         try:
-            publish_bilibili(driver, path_mp4)
+            publish_bilibili(args,driver, path_mp4)
             shutil.move(path_mp4, move_dir)
             idx+=1
-            if idx>4:break
+            if idx>0:break
         except Exception as e:
             print(e)
     driver.quit()

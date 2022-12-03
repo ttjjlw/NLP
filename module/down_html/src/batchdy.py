@@ -28,7 +28,7 @@ import argparse
 import subprocess
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--save_path', type=str, default="./dalao")
+parser.add_argument('--save_path', type=str, default="./有趣的故事")
 parser.add_argument('--isheadless', type=bool, default=True)
 parser.add_argument('--user_id', type=str,
                     default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
@@ -36,14 +36,16 @@ parser.add_argument('--user_id', type=str,
 args, _ = parser.parse_known_args()
 args.user_id = "MS4wLjABAAAA8xUmseK9-WQLGOWbjXCpYcJZU0HPGUf9-qOZ1S7oZ0Q"  # 科学旅行号
 args.user_id = "MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS-Q8m5hsLAh"  # 无聊的知识
-args.user_id = "MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n"  # 商业知道
+args.user_id = "MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n"  # 有趣的故事
 # args.user_id = "MS4wLjABAAAAM0PAT7Egg1e6KKkmpNXPHoo53ul1BSP_c5GAo-o88D-tkIh__vQAmO5s48iYj4BA"  # 足球
 
 save_path = args.save_path
 if not os.path.exists(save_path):
     os.makedirs(save_path)
-
-cmd=r'chrome.exe --remote-debugging-port=9220 --user-data-dir="D:\chromedataco" --headless --disable-gpu --no-sandbox --disable-popup-blocking'
+if args.isheadless:
+    cmd = r'chrome.exe --remote-debugging-port=9220 --user-data-dir="D:\chromedataco" --headless --disable-gpu --no-sandbox --disable-popup-blocking'
+else:
+    cmd = r'chrome.exe --remote-debugging-port=9220 --user-data-dir="D:\chromedataco"'
 p = os.popen(cmd)
 # print("p.read(): {}\n".format(p.read()))
 
@@ -116,9 +118,9 @@ for li in lis:
             data = video_response.content  # 获取返回的视频二进制数据
             rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
             new_title = re.sub(rstr, "_", title)  # 过滤不能作为文件名的字符，替换为下划线
-            new_title = new_title.split("#")[0]
+            title_nolabel = new_title.split("#")[0]
             new_title = '/%s.mp4' % new_title  # 视频文件的命名
-            if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title):
+            if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title) or os.path.exists(save_path + "_move" + '/%s.mp4' % title_nolabel):
                 print("%s 已下载过" % new_title)
                 continue
             file = open(save_path + new_title, 'wb')  # 创建open对象
