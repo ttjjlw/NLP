@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # 导入数据请求模块
 import requests
 # 导入正则
@@ -29,7 +30,7 @@ import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--save_path', type=str, default="./有趣的故事")
-parser.add_argument('--isheadless', type=bool, default=False)
+parser.add_argument('--isheadless', type=bool, default=True)
 parser.add_argument('--user_id', type=str,
                     default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
 
@@ -147,8 +148,6 @@ def main(args,driver):
                     f.write(video_url+'\n')
         except Exception as e:
             print(e)
-            driver.close()
-            exit(0)
 
 def get_user_id(url):
     t = re.findall('(https://v.douyin.com/.*?/)', url, re.S)
