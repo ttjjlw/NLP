@@ -1,7 +1,7 @@
 import selenium
 from selenium import webdriver
 import pathlib
-import time
+import time,datetime
 import shutil,os
 from selenium.webdriver.common.keys import Keys
 
@@ -12,9 +12,10 @@ import argparse
 parser=argparse.ArgumentParser()
 parser.add_argument('--video_addr',type=str,default="/有趣的故事")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
 parser.add_argument('--video_describe',type=str,default='视频')
 parser.add_argument('--isheadless', type=bool, default=False)
+parser.add_argument('--num', type=int, default=1)
 
 args,_=parser.parse_known_args()
 pwd_dir = os.getcwd()
@@ -39,10 +40,10 @@ def publish_bilibili(args,driver,path_mp4):
     # driver.refresh()
     driver.get("https://member.bilibili.com/platform/upload/video/frame")
     title=path_mp4.split('\\')[-1].split("#")[0]
-    label=path_mp4.split('\\')[-1].split("#")[1:]
+    label=path_mp4.split('.')[0].split('\\')[-1].split("#")[1:]
     label=[l for l in label if "dou" not in l and "抖音" not in l]
     label='#'.join(label)
-    if label:args.label=label
+    if label:args.video_label=label
     args.video_describe = args.video_label
 
     try:
@@ -56,7 +57,7 @@ def publish_bilibili(args,driver,path_mp4):
         driver.switch_to.frame(driver.find_element_by_xpath('//iframe[@name="videoUpload"]'))
     except Exception as e:
         pass
-    print(path_mp4)
+    # print(path_mp4)
     driver.find_element_by_xpath('//input[@type="file" and contains(@accept,"mp4")]').send_keys(path_mp4)
 
     # 等待视频上传完成
@@ -80,12 +81,16 @@ def publish_bilibili(args,driver,path_mp4):
     # driver.find_element_by_xpath('//*[text()="确定"]').click()
 
     # 输入标题
-    driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').clear()
-    driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)
 
+    try:
+        driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title) #如果能执行就重新输入，否则不输入
+        driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').clear()
+        driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)
+    except:
+        pass
     # 选择分类
     element = driver.find_element_by_xpath('//*[contains(@class,"select-container")]')
-    print(element.get_attribute("class"))
+    # print(element.get_attribute("class"))
 
     element.click()
     time.sleep(1)
@@ -97,7 +102,7 @@ def publish_bilibili(args,driver,path_mp4):
     driver.find_element_by_xpath(
         '//*[text()="参与话题："]/..//*[@class="tag-topic-list"]/span[1]//*[@class="hot-tag-item"]').click()
     for label in args.video_label.strip().split('#'):
-        print(label)
+        print("lable:",label)
         driver.find_element_by_xpath('//input[@placeholder="按回车键Enter创建标签"]').send_keys(label)
         driver.find_element_by_xpath('//input[@placeholder="按回车键Enter创建标签"]').send_keys(Keys.ENTER)
         time.sleep(1)
@@ -111,7 +116,11 @@ def publish_bilibili(args,driver,path_mp4):
     # 点击发布
     # driver.find_element_by_xpath('//button[text()="立即投稿"]').click()
     # driver.find_element_by_xpath('//*[@id="video-up-app"]/div[2]/div/div/div[1]/div[3]/div[15]/div/span').click()
-    driver.find_element_by_xpath('//*[@class="submit-add" and text()="立即投稿"]').click()
+    try:
+        driver.find_element_by_xpath('//*[@class="submit-add" and text()="立即投稿"]').click()
+    except:
+        element = driver.find_element_by_xpath('//*[@class="submit-add" and text()="立即投稿"]')
+        driver.execute_script("arguments[0].click();", element)
     print("投稿成功")
     time.sleep(3)
 
@@ -123,6 +132,7 @@ def main(args):
     # time.sleep(10)
     port=args.ip.split(":")[-1].strip()
     chrome_dir=r"D:\chromedata%s"%(port)
+
     if not os.path.exists(chrome_dir):
         os.makedirs(chrome_dir)
     if args.isheadless:
@@ -130,6 +140,7 @@ def main(args):
     else:
         cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s"' % (port, port)
     p = os.popen(cmd)
+    time.sleep(1)
     option = webdriver.ChromeOptions()
     option.add_experimental_option("debuggerAddress", args.ip)
     driver_path = '../chromedriver'
@@ -155,14 +166,13 @@ def main(args):
             path_mp4 = str(i)
         print("检查到视频路径：" + path_mp4)
         # publish_bilibili(driver, path_mp4)
-        try:
-            publish_bilibili(args,driver, path_mp4)
-            shutil.move(path_mp4, move_dir)
-            idx+=1
-            if idx>0:break
-        except Exception as e:
-            print(e)
+        publish_bilibili(args,driver, path_mp4)
+        shutil.move(path_mp4, move_dir)
+        idx+=1
+        if idx>args.num-1:break
+    driver.close()
     driver.quit()
+    print('退出成功')
     # 封面地址获取
     # path_cover = ""
     # for i in path.iterdir():
@@ -182,4 +192,15 @@ def main(args):
     # 开始执行b站视频发布
 
 if __name__ == '__main__':
-    main(args)
+    print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
+    print("ip：",args.ip)
+    try:
+        main(args)
+    except:
+        os.popen("taskkill /f /t /im chromedriver.exe")
+        os.popen("taskkill /f /t /im chrome.exe")
+        print("投稿失败，然后终止")
+        exit(0)
+    os.popen("taskkill /f /t /im chromedriver.exe")
+    os.popen("taskkill /f /t /im chrome.exe")
+    print("投稿成功，然后终止")
