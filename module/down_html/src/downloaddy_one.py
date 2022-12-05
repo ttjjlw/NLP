@@ -5,6 +5,16 @@ import os
 
 def dy(txt):
 
+    if not os.path.exists('./downloaded_url'):
+        os.makedirs('./downloaded_url')
+
+    if os.path.exists('./downloaded_url/video_url.txt'):
+        with open('./downloaded_url/video_url.txt','r') as f:
+            lines=f.readlines()
+            downloaded_url=set(lines)
+    else:
+        downloaded_url=set()
+
     t = re.findall('(https://v.douyin.com/.*?/)', txt, re.S)
     if len(t)!=0:
         html = requests.get(t[0], allow_redirects=False)
@@ -28,13 +38,16 @@ def dy(txt):
             video_id=html2.json()['item_list'][0]['video']['play_addr']['uri']
             video_url=f'https://aweme.snssdk.com/aweme/v1/play/?video_id={video_id}&ratio=1080p&line=0'
             # video_url = html2.json()['item_list'][0]['video']['play_addr']['url_list'][0]
-            html3=requests.get(video_url,headers=headers)
-            #print(html3.url)
+            # html3=requests.get(video_url,headers=headers)
+            # #print(html3.url)
+            if video_url+'\n' in downloaded_url:
+                print('该链接已下载过')
+                return
 
             video_response = requests.get(url=video_url, headers=headers)  # 发送下载视频的网络请求
             if video_response.status_code == 200:  # 如果请求成功
                 z = os.getcwd()
-                temp_path = z + '/抖音视频/'  # 在程序当前文件夹下建立文件夹
+                temp_path = z + '/有意思的视频/'  # 在程序当前文件夹下建立文件夹
                 if not os.path.exists(temp_path):
                     os.makedirs(temp_path)
                 data = video_response.content  # 获取返回的视频二进制数据
@@ -45,6 +58,8 @@ def dy(txt):
                 file.write(data)  # 写入数据
                 file.close()  # 关闭
                 print(title+"视频下载成功！")
+            with open('./downloaded_url/video_url.txt', 'a') as f:
+                f.write(video_url+'\n')
         else:print('请输入正确的分享链接！')
 
 # while 1:
@@ -65,4 +80,8 @@ if __name__ == '__main__':
     address='https://v.douyin.com/h1GDq8B/'
     address='https://v.douyin.com/h1Gy9E3/'
     address='https://v.douyin.com/rEbQXhc/'
-    dy(address)
+    preix="https://v.douyin.com/"
+    address_lis=["h8ScJBe","h8ALsv3"]
+    for d in address_lis:
+        address="%s%s/"%(preix,d)
+        dy(address)

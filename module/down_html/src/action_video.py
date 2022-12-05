@@ -34,27 +34,41 @@ def init_driver():
         # 大量渲染时候写入/tmp而非/dev/shm
         option.add_argument('disable-dev-shm-usage')
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
+    driver.implicitly_wait(10)
     return driver
     # driver.maximize_window()
 
-    driver.implicitly_wait(10)
+
 
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
     driver.get(url)
 def del_video(driver):
     driver.find_element_by_xpath('//*[@id="cc-body"]/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]/a').click()
-    lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage.pos-center > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
+
+    lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
     for li in lis:
+        print(li)
         element=li.find_element_by_xpath('//*[@title="播放"]//span[contains(@class,click-text)]')
         s=element.get_attribute('outerHTML')
         play_num=int(re.findall('>(\d+)<', s)[0])
-        if play_num<=10:
-            li.find_element_by_xpath("//*[@class='more-btn']").click()
+        # if play_num<=10:
+            # li.find_element_by_xpath("//*[@class='more-btn']").click()
+        element=li.find_element_by_xpath('//*[@class="meta-title"]')
+        s = element.get_attribute('outerHTML')
+        print(s)
+        video_url=re.findall('href="//(.+/)"', s)[0]
+        print(video_url)
+
 
 
 if __name__ == '__main__':
-    driver=init_driver()
-    open_url(driver)
-    del_video(driver)
+    try:
+        driver=init_driver()
+        open_url(driver)
+        del_video(driver)
+    except Exception as e:
+        print(e)
+    os.popen("taskkill /f /t /im chromedriver.exe")
+    os.popen("taskkill /f /t /im chrome.exe")
 
