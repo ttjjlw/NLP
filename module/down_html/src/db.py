@@ -15,9 +15,10 @@ parser.add_argument('--video_label',type=str,default='label1,label2')
 parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
 parser.add_argument('--video_describe',type=str,default='视频')
 parser.add_argument('--isheadless', type=bool, default=False)
-parser.add_argument('--num', type=int, default=1)
+parser.add_argument('--num', type=int, default=2)
 
 args,_=parser.parse_known_args()
+if args.video_addr=='gaoxiao':args.video_addr='/搞笑'
 pwd_dir = os.getcwd()
 print("pwd_dir:",pwd_dir)
 args.video_addr=pwd_dir + args.video_addr
@@ -194,9 +195,11 @@ def main(args):
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     print("ip：",args.ip)
+    # if args.ip[-4:]=='9222':exit(0)
     try:
         main(args)
-    except:
+    except Exception as e:
+        print(e)
         os.popen("taskkill /f /t /im chromedriver.exe")
         os.popen("taskkill /f /t /im chrome.exe")
         print("投稿失败，然后终止")
