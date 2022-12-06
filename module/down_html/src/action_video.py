@@ -43,7 +43,7 @@ def init_driver():
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
     driver.get(url)
-def del_video(driver):
+def save_video_url(driver):
     driver.find_element_by_xpath('//*[@id="cc-body"]/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]/a').click()
 
     lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
@@ -55,19 +55,30 @@ def del_video(driver):
             # li.find_element_by_xpath("//*[@class='more-btn']").click()
         video_url = li.find_element_by_css_selector('a').get_attribute('href')
         print(video_url)
+        if video_url + '\n' in downloaded_url:continue
+        with open('./videoB_url.txt', 'a') as f:
+            f.write(video_url + '\n')
         # element=li.find_element_by_xpath('//*[@class="meta-title"]')
         # s = element.get_attribute('outerHTML')
         # print(s)
         # video_url=re.findall('href="//(.+/)"', s)[0]
         # print(video_url)
+def play_video(driver,url):
+    driver.get(url)
 
 
 
 if __name__ == '__main__':
+    with open('./videoB_url.txt', 'r') as f:
+        lines = f.readlines()
+        downloaded_url = set(lines)
     try:
         driver=init_driver()
         open_url(driver)
-        del_video(driver)
+        save_video_url(driver,downloaded_url)
+        for url in lines:
+            play_video(driver,url)
+            time.sleep(120)
     except Exception as e:
         print(e)
     os.popen("taskkill /f /t /im chromedriver.exe")
