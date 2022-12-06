@@ -159,10 +159,16 @@ def get_user_id(url):
         url =url.split('/')[-1]
     return url
 if __name__ == '__main__':
-    dic_url={'搞笑':'https://v.douyin.com/heXQkgQ/','有趣的故事':"MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n"}
+    dic_url={'搞笑':'https://v.douyin.com/heXQkgQ/',
+             '有趣的故事':"MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n",
+             '有趣的故事 ':"https://v.douyin.com/h8xHqDn/",
+             '名人大咖':"https://v.douyin.com/h8xccGx/",
+             '名人大咖 ':"https://v.douyin.com/h8QN6Pq/",
+             '怀旧故事':'https://v.douyin.com/h8x7pQG/'}
     driver=driver_init(args)
     try:
         for name,url in dic_url.items():
+            name=name.strip()
             print("即将下载%s视频..."%name)
             args.user_id=get_user_id(url.strip())
             args.save_path='./'+name

@@ -81,7 +81,7 @@ if __name__ == '__main__':
     address='https://v.douyin.com/h1Gy9E3/'
     address='https://v.douyin.com/rEbQXhc/'
     preix="https://v.douyin.com/"
-    address_lis=["h8ScJBe","h8ALsv3"]
+    address_lis=["h8ScJBe","h8ALsv3","h8xKXAL",'h8xwEMg']
     for d in address_lis:
         address="%s%s/"%(preix,d)
         dy(address)

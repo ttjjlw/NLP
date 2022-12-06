@@ -48,17 +48,18 @@ def del_video(driver):
 
     lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
     for li in lis:
-        print(li)
-        element=li.find_element_by_xpath('//*[@title="播放"]//span[contains(@class,click-text)]')
-        s=element.get_attribute('outerHTML')
-        play_num=int(re.findall('>(\d+)<', s)[0])
+        # element=li.find_element_by_xpath('//*[@title="播放"]//span[contains(@class,click-text)]')
+        # s=element.get_attribute('outerHTML')
+        # play_num=int(re.findall('>(\d+)<', s)[0])
         # if play_num<=10:
             # li.find_element_by_xpath("//*[@class='more-btn']").click()
-        element=li.find_element_by_xpath('//*[@class="meta-title"]')
-        s = element.get_attribute('outerHTML')
-        print(s)
-        video_url=re.findall('href="//(.+/)"', s)[0]
+        video_url = li.find_element_by_css_selector('a').get_attribute('href')
         print(video_url)
+        # element=li.find_element_by_xpath('//*[@class="meta-title"]')
+        # s = element.get_attribute('outerHTML')
+        # print(s)
+        # video_url=re.findall('href="//(.+/)"', s)[0]
+        # print(video_url)
 
 
 
