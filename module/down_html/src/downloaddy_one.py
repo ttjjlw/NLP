@@ -38,6 +38,7 @@ def dy(txt):
             video_id=html2.json()['item_list'][0]['video']['play_addr']['uri']
             video_url=f'https://aweme.snssdk.com/aweme/v1/play/?video_id={video_id}&ratio=1080p&line=0'
             # video_url = html2.json()['item_list'][0]['video']['play_addr']['url_list'][0]
+            # video_url = video_url.replace("playwm", "play")
             # html3=requests.get(video_url,headers=headers)
             # #print(html3.url)
             if video_url+'\n' in downloaded_url:
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     address='https://v.douyin.com/h1Gy9E3/'
     address='https://v.douyin.com/rEbQXhc/'
     preix="https://v.douyin.com/"
-    address_lis=["h8ScJBe","h8ALsv3","h8xKXAL",'h8xwEMg']
+    address_lis=["hY1mmvJ"]
     for d in address_lis:
         address="%s%s/"%(preix,d)
         dy(address)

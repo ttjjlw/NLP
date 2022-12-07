@@ -12,15 +12,24 @@ import argparse,random
 parser=argparse.ArgumentParser()
 parser.add_argument('--video_addr',type=str,default="/爆笑")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
 parser.add_argument('--video_describe',type=str,default='视频')
 parser.add_argument('--isheadless', type=bool, default=False)
 parser.add_argument('--num', type=int, default=2)
 
 args,_=parser.parse_known_args()
-if args.video_addr=='gaoxiao':args.video_addr='/爆笑'
-if args.video_addr=='minren':args.video_addr='/名人大咖'
-if args.video_addr=='huaijiu':args.video_addr='/怀旧故事'
+cate1 = "知识"
+cate2 = "人文历史"
+if args.video_addr=='gaoxiao':
+    args.video_addr='/爆笑'
+    cate1="生活"
+    cate2="搞笑"
+if args.video_addr=='minren':
+    args.video_addr='/名人大咖'
+    cate1="知识"
+    cate2="社科·法律·心理"
+if args.video_addr=='huaijiu':
+    args.video_addr='/怀旧故事'
 if args.video_addr=='sense':args.video_addr='/有意思的视频'
 if args.video_addr=='youqu':args.video_addr='/有趣的故事'
 if args.video_addr=='suiji':args.video_addr=random.choice(["/名人大咖","/有意思的视频"])
@@ -48,10 +57,11 @@ def publish_bilibili(args,driver,path_mp4):
     driver.get("https://member.bilibili.com/platform/upload/video/frame")
     title=path_mp4.split('\\')[-1].split("#")[0]
     label=path_mp4.split('.')[0].split('\\')[-1].split("#")[1:]
-    label=[l for l in label if "dou" not in l and "抖音" not in l]
+    label=[l for l in label if "dou" not in l and "抖音" not in l and len(l.strip())>1]
     label='#'.join(label)
     if label:args.video_label=label
     args.video_describe = args.video_label
+    if len(title)<=6:title=args.video_label
 
     try:
         alert = driver.switch_to.alert()
@@ -101,8 +111,9 @@ def publish_bilibili(args,driver,path_mp4):
 
     element.click()
     time.sleep(1)
-    driver.find_element_by_xpath('//*[@class="f-item-content" and text()="知识"]').click()
-    driver.find_element_by_xpath('//*[@class="item-main" and text()="人文历史"]').click()
+    driver.find_element_by_xpath('//*[@class="f-item-content" and text()="{}"]'.format(cate1)).click()
+    time.sleep(1)
+    driver.find_element_by_xpath('//*[@class="item-main" and text()="{}"]'.format(cate2)).click()
 
     # 选择标签
     time.sleep(2)
