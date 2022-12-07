@@ -10,7 +10,7 @@ import argparse,random
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 #chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--video_addr',type=str,default="/有趣的故事")
+parser.add_argument('--video_addr',type=str,default="/爆笑")
 parser.add_argument('--video_label',type=str,default='label1,label2')
 parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
 parser.add_argument('--video_describe',type=str,default='视频')
