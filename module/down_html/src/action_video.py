@@ -10,7 +10,7 @@ import argparse
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 #chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9224')
 parser.add_argument('--isheadless', type=bool, default=False)
 parser.add_argument('--isplay', type=bool, default=True)
 parser.add_argument('--issave', type=bool, default=False)
@@ -65,9 +65,37 @@ def save_video_url(driver,downloaded_url):
         # print(s)
         # video_url=re.findall('href="//(.+/)"', s)[0]
         # print(video_url)
+def to_sec(duration):
+    '''
+    :param duration: '00:14'
+    :return:
+    '''
+    tmp=duration.split(':')
+    duration_int=0
+    for idx,i in enumerate(tmp[::-1]):
+        if idx==1:
+            lv=60
+        elif idx==0:
+            lv=1
+        elif idx==2:
+            lv=3600
+        else:
+            ValueError('time format is error')
+
+        duration_int+=int(i)*lv
+    return duration_int
+
 def play_video(driver,url):
     driver.get(url)
-    print(1)
+    element=driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
+    if element.get_attribute("class")=="like":
+        element.click()
+    duration=element.find_element_by_xpath('//*[contains(@class,"time-duration")]').text
+    duration=to_sec(duration)
+    print(duration)
+    time.sleep(duration)
+    print('s')
+
 
 
 
@@ -83,7 +111,6 @@ if __name__ == '__main__':
         if args.isplay:
             for url in lines:
                 play_video(driver,url)
-                time.sleep(120)
     except Exception as e:
         print(e)
     os.popen("taskkill /f /t /im chromedriver.exe")

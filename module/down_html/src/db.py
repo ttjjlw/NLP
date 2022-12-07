@@ -10,12 +10,12 @@ import argparse,random
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 #chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--video_addr',type=str,default="/suiji")
+parser.add_argument('--video_addr',type=str,default="suiji")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9224')
 parser.add_argument('--video_describe',type=str,default='视频')
 parser.add_argument('--isheadless', type=bool, default=False)
-parser.add_argument('--num', type=int, default=2)
+parser.add_argument('--num', type=int, default=10)
 
 args,_=parser.parse_known_args()
 cate1 = "知识"
@@ -89,7 +89,8 @@ def publish_bilibili(args,driver,path_mp4):
 
     # # 添加封面
     driver.find_element_by_xpath('//*[text()="更改封面"]').click()
-    driver.find_element_by_xpath('//*[@class="cover-cut"]//*[contains(text(),"完成")]').click()
+    element=driver.find_element_by_xpath('//*[@class="cover-cut"]//*[contains(text(),"完成")]')
+    driver.execute_script("arguments[0].click();", element)
     # # time.sleep(1)
     # driver.find_element_by_xpath('//div[text()="图片上传"]').click()
     # # time.sleep(1)
