@@ -18,12 +18,12 @@ parser.add_argument('--isheadless', type=bool, default=False)
 parser.add_argument('--num', type=int, default=2)
 
 args,_=parser.parse_known_args()
-if args.video_addr=='gaoxiao':args.video_addr='/搞笑'
+if args.video_addr=='gaoxiao':args.video_addr='/爆笑'
 if args.video_addr=='minren':args.video_addr='/名人大咖'
 if args.video_addr=='huaijiu':args.video_addr='/怀旧故事'
-if args.video_addr=='sense':args.video_addr='/有意思的故事'
+if args.video_addr=='sense':args.video_addr='/有意思的视频'
 if args.video_addr=='youqu':args.video_addr='/有趣的故事'
-if args.video_addr=='suiji':args.video_addr=random.choice(["/名人大咖","/有意思的故事"])
+if args.video_addr=='suiji':args.video_addr=random.choice(["/名人大咖","/有意思的视频"])
 
 pwd_dir = os.getcwd()
 print("pwd_dir:",pwd_dir)
