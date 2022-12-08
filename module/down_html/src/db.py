@@ -2,7 +2,7 @@ import selenium
 from selenium import webdriver
 import pathlib
 import time,datetime
-import shutil,os
+import shutil,os,re
 from selenium.webdriver.common.keys import Keys
 
 import argparse,random
@@ -12,10 +12,10 @@ import argparse,random
 parser=argparse.ArgumentParser()
 parser.add_argument('--video_addr',type=str,default="suiji")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9224')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
 parser.add_argument('--video_describe',type=str,default='视频')
-parser.add_argument('--isheadless', type=bool, default=False)
-parser.add_argument('--num', type=int, default=10)
+parser.add_argument('--isheadless', type=bool, default=True)
+parser.add_argument('--num', type=int, default=3)
 
 args,_=parser.parse_known_args()
 cate1 = "知识"
@@ -57,7 +57,8 @@ def publish_bilibili(args,driver,path_mp4):
     driver.get("https://member.bilibili.com/platform/upload/video/frame")
     title=path_mp4.split('\\')[-1].split("#")[0]
     label=path_mp4.split('.')[0].split('\\')[-1].split("#")[1:]
-    label=[l for l in label if "dou" not in l and "抖音" not in l and len(l.strip())>1]
+    label=[re.sub(u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a])","",l) for l in label if "dou" not in l and "抖音" not in l and len(l.strip())>1]
+
     label='#'.join(label)
     if label:args.video_label=label
     args.video_describe = args.video_label
@@ -109,8 +110,7 @@ def publish_bilibili(args,driver,path_mp4):
     # 选择分类
     element = driver.find_element_by_xpath('//*[contains(@class,"select-container")]')
     # print(element.get_attribute("class"))
-
-    element.click()
+    driver.execute_script("arguments[0].click();", element)
     time.sleep(1)
     driver.find_element_by_xpath('//*[@class="f-item-content" and text()="{}"]'.format(cate1)).click()
     time.sleep(1)
@@ -214,14 +214,14 @@ if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     print("ip：",args.ip)
     # if args.ip[-4:]=='9222':exit(0)
-    try:
-        main(args)
-    except Exception as e:
-        print(e)
-        os.popen("taskkill /f /t /im chromedriver.exe")
-        os.popen("taskkill /f /t /im chrome.exe")
-        print("投稿失败，然后终止")
-        exit(0)
+    # try:
+    main(args)
+    # except Exception as e:
+    #     print(e)
+    #     os.popen("taskkill /f /t /im chromedriver.exe")
+    #     os.popen("taskkill /f /t /im chrome.exe")
+    #     print("投稿失败，然后终止")
+    #     exit(0)
     os.popen("taskkill /f /t /im chromedriver.exe")
     os.popen("taskkill /f /t /im chrome.exe")
     print("投稿成功，然后终止")

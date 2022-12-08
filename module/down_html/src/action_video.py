@@ -90,10 +90,15 @@ def play_video(driver,url):
     element=driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
     if element.get_attribute("class")=="like":
         element.click()
-    duration=element.find_element_by_xpath('//*[contains(@class,"time-duration")]').text
+    tt=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').is_displayed()  #false表示被隐藏，不能通过elemment.text获取文本
+    print(tt)
+    duration=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').get_attribute("textContent")
+    # duration=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').get_attribute("innerText")
+    # duration=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').get_attribute("innerHTML")
+
     duration=to_sec(duration)
     print(duration)
-    time.sleep(duration)
+    # time.sleep(duration)
     print('s')
 
 
@@ -113,6 +118,6 @@ if __name__ == '__main__':
                 play_video(driver,url)
     except Exception as e:
         print(e)
-    os.popen("taskkill /f /t /im chromedriver.exe")
-    os.popen("taskkill /f /t /im chrome.exe")
+    # os.popen("taskkill /f /t /im chromedriver.exe")
+    # os.popen("taskkill /f /t /im chrome.exe")
 
