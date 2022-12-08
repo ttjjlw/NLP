@@ -10,14 +10,14 @@ import argparse
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 #chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--ip',type=str,default='127.0.0.1:9224')
-parser.add_argument('--isheadless', type=bool, default=False)
+parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
+parser.add_argument('--isheadless', type=bool, default=True)
 parser.add_argument('--isplay', type=bool, default=True)
-parser.add_argument('--issave', type=bool, default=False)
+parser.add_argument('--issave', type=bool, default=True)
 
 args,_=parser.parse_known_args()
 
-def init_driver():
+def init_driver(args):
     port = args.ip.split(":")[-1].strip()
     if args.isheadless:
         cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking'%(port,port)
@@ -87,19 +87,19 @@ def to_sec(duration):
 
 def play_video(driver,url):
     driver.get(url)
-    element=driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
-    if element.get_attribute("class")=="like":
-        element.click()
+
     tt=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').is_displayed()  #false表示被隐藏，不能通过elemment.text获取文本
-    print(tt)
     duration=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').get_attribute("textContent")
     # duration=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').get_attribute("innerText")
     # duration=driver.find_element_by_xpath('//*[contains(@class,"time-duration")]').get_attribute("innerHTML")
 
     duration=to_sec(duration)
     print(duration)
-    # time.sleep(duration)
-    print('s')
+    time.sleep(duration*0.8)
+    element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
+    if element.get_attribute("class") == "like":
+        element.click()
+    time.sleep(duration * 0.2)
 
 
 
@@ -108,16 +108,25 @@ if __name__ == '__main__':
     with open('./videoB_url.txt', 'r') as f:
         lines = f.readlines()
         downloaded_url = set(lines)
-    try:
-        driver=init_driver()
-        if args.issave:
+    with open('./videoB_url.txt', 'w') as f:
+        pass
+
+    ip_lis=["127.0.0.1:9222",'127.0.0.1:9223','127.0.0.1:9224']
+    if args.issave:
+        for ip in ip_lis:
+            args.ip=ip
+            driver=init_driver(args)
             open_url(driver)
             save_video_url(driver,downloaded_url)
-        if args.isplay:
-            for url in lines:
+            print('ip为：%s的视频链接下载完毕'%ip)
+    if args.isplay:
+        for ip in ip_lis:
+            args.ip = ip
+            driver = init_driver(args)
+            for idx,url in enumerate(lines):
                 play_video(driver,url)
-    except Exception as e:
-        print(e)
-    # os.popen("taskkill /f /t /im chromedriver.exe")
-    # os.popen("taskkill /f /t /im chrome.exe")
+                print("ip为：%s，第%s篇播放完毕"%(ip,idx))
+
+    os.popen("taskkill /f /t /im chromedriver.exe")
+    os.popen("taskkill /f /t /im chrome.exe")
 

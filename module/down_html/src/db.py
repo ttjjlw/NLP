@@ -12,10 +12,10 @@ import argparse,random
 parser=argparse.ArgumentParser()
 parser.add_argument('--video_addr',type=str,default="suiji")
 parser.add_argument('--video_label',type=str,default='label1,label2')
-parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9224')
 parser.add_argument('--video_describe',type=str,default='视频')
-parser.add_argument('--isheadless', type=bool, default=True)
-parser.add_argument('--num', type=int, default=3)
+parser.add_argument('--isheadless', type=bool, default=False)
+parser.add_argument('--num', type=int, default=2)
 
 args,_=parser.parse_known_args()
 cate1 = "知识"
@@ -32,7 +32,7 @@ if args.video_addr=='huaijiu':
     args.video_addr='/怀旧故事'
 if args.video_addr=='sense':args.video_addr='/有意思的视频'
 if args.video_addr=='youqu':args.video_addr='/有趣的故事'
-if args.video_addr=='suiji':args.video_addr=random.choice(["/名人大咖","/有意思的视频"])
+if args.video_addr=='suiji':args.video_addr=random.choice(["/有意思的视频"])
 
 pwd_dir = os.getcwd()
 print("pwd_dir:",pwd_dir)
@@ -79,8 +79,14 @@ def publish_bilibili(args,driver,path_mp4):
     driver.find_element_by_xpath('//input[@type="file" and contains(@accept,"mp4")]').send_keys(path_mp4)
 
     # 等待视频上传完成
+    idx=0
     while True:
         try:
+            idx+=1
+            if idx>100:
+                print("视频上传超时")
+                exit(0)
+                break
             driver.find_element_by_xpath('//*[text()="上传完成"]')
             break;
         except Exception as e:
@@ -89,9 +95,9 @@ def publish_bilibili(args,driver,path_mp4):
     print("视频已上传完成！")
 
     # # 添加封面
-    driver.find_element_by_xpath('//*[text()="更改封面"]').click()
-    element=driver.find_element_by_xpath('//*[@class="cover-cut"]//*[contains(text(),"完成")]')
-    driver.execute_script("arguments[0].click();", element)
+    # driver.find_element_by_xpath('//*[text()="更改封面"]').click()
+    # element=driver.find_element_by_xpath('//*[@class="cover-cut"]//*[contains(text(),"完成")]')
+    # driver.execute_script("arguments[0].click();", element)
     # # time.sleep(1)
     # driver.find_element_by_xpath('//div[text()="图片上传"]').click()
     # # time.sleep(1)
@@ -104,17 +110,24 @@ def publish_bilibili(args,driver,path_mp4):
     try:
         driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title) #如果能执行就重新输入，否则不输入
         driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').clear()
+        time.sleep(0.2)
         driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)
     except:
         pass
     # 选择分类
-    element = driver.find_element_by_xpath('//*[contains(@class,"select-container")]')
-    # print(element.get_attribute("class"))
-    driver.execute_script("arguments[0].click();", element)
-    time.sleep(1)
-    driver.find_element_by_xpath('//*[@class="f-item-content" and text()="{}"]'.format(cate1)).click()
-    time.sleep(1)
-    driver.find_element_by_xpath('//*[@class="item-main" and text()="{}"]'.format(cate2)).click()
+    try:
+        element = driver.find_element_by_xpath('//*[contains(@class,"select-container")]')
+        # element = driver.find_element_by_xpath('//*[@id="video-up-app"]/div[2]/div/div/div[1]/div[2]/div[5]/div/div[2]/div/div')
+        # print(element.get_attribute("class"))
+        driver.execute_script("arguments[0].click();", element)
+
+        time.sleep(1)
+        driver.find_element_by_xpath('//*[@class="f-item-content" and text()="{}"]'.format(cate1)).click()
+        time.sleep(1)
+        driver.find_element_by_xpath('//*[@class="item-main" and text()="{}"]'.format(cate2)).click()
+    except Exception as e:
+        print('分区选择失败，使用默认的: ',e)
+
 
     # 选择标签
     time.sleep(2)
@@ -171,6 +184,7 @@ def main(args):
         # 大量渲染时候写入/tmp而非/dev/shm
         option.add_argument('disable-dev-shm-usage')
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
+    time.sleep(5)
     # driver.maximize_window()
 
     driver.implicitly_wait(10)
@@ -214,14 +228,14 @@ if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     print("ip：",args.ip)
     # if args.ip[-4:]=='9222':exit(0)
-    # try:
-    main(args)
-    # except Exception as e:
-    #     print(e)
-    #     os.popen("taskkill /f /t /im chromedriver.exe")
-    #     os.popen("taskkill /f /t /im chrome.exe")
-    #     print("投稿失败，然后终止")
-    #     exit(0)
+    try:
+        main(args)
+    except Exception as e:
+        print(e)
+        os.popen("taskkill /f /t /im chromedriver.exe")
+        os.popen("taskkill /f /t /im chrome.exe")
+        print("投稿失败，然后终止")
+        exit(0)
     os.popen("taskkill /f /t /im chromedriver.exe")
     os.popen("taskkill /f /t /im chrome.exe")
     print("投稿成功，然后终止")
