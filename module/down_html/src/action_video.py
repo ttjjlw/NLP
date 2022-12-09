@@ -45,10 +45,11 @@ def init_driver(args):
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
     driver.get(url)
-def save_video_url(driver,downloaded_url):
+def save_video_url(driver):
     driver.find_element_by_xpath('//*[@id="cc-body"]/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]/a').click()
     time.sleep(1)
     lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
+    video_url_lis=[]
     for li in lis:
         # element=li.find_element_by_xpath('//*[@title="播放"]//span[contains(@class,click-text)]')
         # s=element.get_attribute('outerHTML')
@@ -56,15 +57,10 @@ def save_video_url(driver,downloaded_url):
         # if play_num<=10:
             # li.find_element_by_xpath("//*[@class='more-btn']").click()
         video_url = li.find_element_by_css_selector('a').get_attribute('href')
-        if video_url + '\n' in downloaded_url:continue
         print(video_url)
-        with open('./videoB_url.txt', 'a') as f:
-            f.write(video_url + '\n')
-        # element=li.find_element_by_xpath('//*[@class="meta-title"]')
-        # s = element.get_attribute('outerHTML')
-        # print(s)
-        # video_url=re.findall('href="//(.+/)"', s)[0]
-        # print(video_url)
+        video_url_lis.append(video_url + '\n')
+    with open('./videoB_url.txt', 'w') as f:
+        f.write(video_url_lis)
 def to_sec(duration):
     '''
     :param duration: '00:14'
@@ -100,35 +96,31 @@ def play_video(driver,url):
     if element.get_attribute("class") == "like":
         element.click()
     time.sleep(duration * 0.2)
+    return duration
 
 
 
 
 if __name__ == '__main__':
-    with open('./videoB_url.txt', 'r') as f:
-        lines = f.readlines()
-        downloaded_url = set(lines)
-    with open('./videoB_url.txt', 'w') as f:
-        pass
-
+    print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     ip_lis=["127.0.0.1:9222",'127.0.0.1:9223','127.0.0.1:9224']
     if args.issave:
         for ip in ip_lis:
             args.ip=ip
             driver=init_driver(args)
             open_url(driver)
-            save_video_url(driver,downloaded_url)
+            save_video_url(driver)
             print('ip为：%s的视频链接下载完毕'%ip)
     if args.isplay:
         with open('./videoB_url.txt', 'r') as f:
             lines = f.readlines()
-        for ip in ip_lis:
-            args.ip = ip
-            driver = init_driver(args)
-            for idx,url in enumerate(lines):
-                play_video(driver,url)
-                print("ip为：%s，第%s篇播放完毕"%(ip,idx))
-
+        driver = init_driver(args)
+        duration=0
+        for idx,url in enumerate(lines):
+            duration=play_video(driver,url)
+            duration+=duration
+            print("ip为：%s，第%s篇播放完毕"%(args.ip,idx))
+        print("ip为:%s，总共观看时长%s秒"%(args.ip,duration))
     os.popen("taskkill /f /t /im chromedriver.exe")
     os.popen("taskkill /f /t /im chrome.exe")
 
