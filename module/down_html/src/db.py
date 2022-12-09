@@ -14,8 +14,8 @@ parser.add_argument('--video_addr',type=str,default="suiji")
 parser.add_argument('--video_label',type=str,default='label1,label2')
 parser.add_argument('--ip',type=str,default='127.0.0.1:9224')
 parser.add_argument('--video_describe',type=str,default='视频')
-parser.add_argument('--isheadless', type=bool, default=False)
-parser.add_argument('--num', type=int, default=2)
+parser.add_argument('--isheadless', type=bool, default=True)
+parser.add_argument('--num', type=int, default=3)
 
 args,_=parser.parse_known_args()
 cate1 = "知识"

@@ -166,7 +166,10 @@ if __name__ == '__main__':
              '有趣的故事 ':"https://v.douyin.com/h8xHqDn/",
              '名人大咖':"https://v.douyin.com/h8xccGx/",
              '名人大咖 ':"https://v.douyin.com/h8QN6Pq/",
+             '足球':"https://v.douyin.com/hYuvxEm/",
+             'LOL':"https://v.douyin.com/h2yWMCP/",
              '怀旧故事':'https://v.douyin.com/h8x7pQG/'}
+    # '电影解说':"https://v.douyin.com/hNxCfns/"
     driver=driver_init(args)
     try:
         for name,url in dic_url.items():
