@@ -22,6 +22,7 @@ def init_driver(args):
     p = os.popen(cmd)
     time.sleep(1)
     option = webdriver.ChromeOptions()
+    # option.add_experimental_option('excludeSwitches', ['enable-automation'])  # 模拟真正浏览器
     option.add_experimental_option("debuggerAddress", args.ip)
     driver_path = '../chromedriver'
     if args.isheadless:
@@ -37,7 +38,7 @@ def init_driver(args):
     driver_service.start()  # 开启一个chromedriver.exe任务
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
     driver.implicitly_wait(10)
-    return driver,driver_service
+    return driver,driver_service,p
     # driver.maximize_window()
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
@@ -51,3 +52,4 @@ if __name__ == '__main__':
     finally:
         driver.quit()
         driver_service.stop()
+        print("关闭")
