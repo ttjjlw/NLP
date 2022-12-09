@@ -56,8 +56,8 @@ def save_video_url(driver,downloaded_url):
         # if play_num<=10:
             # li.find_element_by_xpath("//*[@class='more-btn']").click()
         video_url = li.find_element_by_css_selector('a').get_attribute('href')
-        print(video_url)
         if video_url + '\n' in downloaded_url:continue
+        print(video_url)
         with open('./videoB_url.txt', 'a') as f:
             f.write(video_url + '\n')
         # element=li.find_element_by_xpath('//*[@class="meta-title"]')
@@ -120,6 +120,8 @@ if __name__ == '__main__':
             save_video_url(driver,downloaded_url)
             print('ip为：%s的视频链接下载完毕'%ip)
     if args.isplay:
+        with open('./videoB_url.txt', 'r') as f:
+            lines = f.readlines()
         for ip in ip_lis:
             args.ip = ip
             driver = init_driver(args)
