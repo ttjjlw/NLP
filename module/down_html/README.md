@@ -10,3 +10,5 @@
 报错：no such element: Unable to locate element: {"method":"xpath","selector":"//*[@class="f-item-content" and text()="知识"]"}
 解决办法：
     查看是否不同条件，显现情况不一样
+
+使用debug 模式，driver.quit()不生效，也就是chrome窗口不会关闭，在执行脚本就会有问题，比如访问url不生效，无头模式会报database io error

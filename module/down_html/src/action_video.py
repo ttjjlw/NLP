@@ -13,7 +13,7 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
 parser.add_argument('--isheadless', type=bool, default=True)
 parser.add_argument('--isplay', type=bool, default=True)
-parser.add_argument('--issave', type=bool, default=True)
+parser.add_argument('--issave', type=bool, default=False)
 
 args,_=parser.parse_known_args()
 
@@ -45,22 +45,26 @@ def init_driver(args):
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
     driver.get(url)
-def save_video_url(driver):
-    driver.find_element_by_xpath('//*[@id="cc-body"]/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]/a').click()
-    time.sleep(1)
-    lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
-    video_url_lis=[]
-    for li in lis:
-        # element=li.find_element_by_xpath('//*[@title="播放"]//span[contains(@class,click-text)]')
-        # s=element.get_attribute('outerHTML')
-        # play_num=int(re.findall('>(\d+)<', s)[0])
-        # if play_num<=10:
-            # li.find_element_by_xpath("//*[@class='more-btn']").click()
-        video_url = li.find_element_by_css_selector('a').get_attribute('href')
-        print(video_url)
-        video_url_lis.append(video_url + '\n')
-    with open('./videoB_url.txt', 'w') as f:
-        f.write(video_url_lis)
+def save_video_url(driver,file):
+    try:
+        driver.find_element_by_xpath('//*[@id="cc-body"]/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]/a').click()
+        time.sleep(1)
+        lis = driver.find_elements_by_css_selector('#cc-body > div.cc-content-body.upload-manage > div.article-v2-wrap.content > div.is-article.cc-article-wrp > div:nth-child(2) > div.article-list_wrap > div')
+        video_url_lis=[]
+        for li in lis:
+            # element=li.find_element_by_xpath('//*[@title="播放"]//span[contains(@class,click-text)]')
+            # s=element.get_attribute('outerHTML')
+            # play_num=int(re.findall('>(\d+)<', s)[0])
+            # if play_num<=10:
+                # li.find_element_by_xpath("//*[@class='more-btn']").click()
+            video_url = li.find_element_by_css_selector('a').get_attribute('href')
+            print(video_url)
+            video_url_lis.append(video_url)
+    except Exception as e:
+        print(e)
+        file.close()
+        exit(1)
+    file.write('\n'.join(video_url_lis)+'\n')
 def to_sec(duration):
     '''
     :param duration: '00:14'
@@ -98,29 +102,40 @@ def play_video(driver,url):
     time.sleep(duration * 0.2)
     return duration
 
-
-
-
-if __name__ == '__main__':
+def main(args):
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
-    ip_lis=["127.0.0.1:9222",'127.0.0.1:9223','127.0.0.1:9224']
+    ip_lis = ["127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224']
     if args.issave:
+        file = open('./videoB_url.txt', 'w')
         for ip in ip_lis:
-            args.ip=ip
-            driver=init_driver(args)
+            args.ip = ip
+            driver = init_driver(args)
             open_url(driver)
-            save_video_url(driver)
-            print('ip为：%s的视频链接下载完毕'%ip)
+            save_video_url(driver,file)
+            print('ip为：%s的视频链接下载完毕' % ip)
+        file.close()
     if args.isplay:
         with open('./videoB_url.txt', 'r') as f:
             lines = f.readlines()
         driver = init_driver(args)
-        duration=0
-        for idx,url in enumerate(lines):
-            duration=play_video(driver,url)
-            duration+=duration
-            print("ip为：%s，第%s篇播放完毕"%(args.ip,idx))
-        print("ip为:%s，总共观看时长%s秒"%(args.ip,duration))
+        duration_sum = 0
+        for idx, url in enumerate(lines):
+            duration = play_video(driver, url)
+            duration_sum += duration
+            print("ip为：%s，第%s篇播放完毕" % (args.ip, idx+1))
+        print("ip为:%s，总共观看时长%s秒" % (args.ip, duration_sum))
+
+
+if __name__ == '__main__':
+    try:
+        main(args)
+    except Exception as e:
+        print(e)
+        print("失败退出")
+        os.popen("taskkill /f /t /im chromedriver.exe")
+        os.popen("taskkill /f /t /im chrome.exe")
+        exit(0)
     os.popen("taskkill /f /t /im chromedriver.exe")
     os.popen("taskkill /f /t /im chrome.exe")
+    print("成功退出")
 
