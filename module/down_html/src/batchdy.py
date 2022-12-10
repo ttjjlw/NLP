@@ -159,9 +159,12 @@ def get_user_id(url):
         url = html.headers['Location']
         url =url.split('/')[-1]
     return url
+
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
-    dic_url={'爆笑':'https://v.douyin.com/hFjyf2B/',
+    dic_url={
+        '名人大咖  ': "https://v.douyin.com/hrvcbE6/",
+        '爆笑':'https://v.douyin.com/hFjyf2B/',
              '有趣的故事':"MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n",
              '有趣的故事 ':"https://v.douyin.com/h8xHqDn/",
              '名人大咖':"https://v.douyin.com/h8xccGx/",

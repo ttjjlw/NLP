@@ -8,7 +8,7 @@ import argparse
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 #chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser=argparse.ArgumentParser()
-parser.add_argument('--ip',type=str,default='127.0.0.1:9223')
+parser.add_argument('--ip',type=str,default='127.0.0.1:9222')
 parser.add_argument('--isheadless', type=bool, default=False)
 parser.add_argument('--isplay', type=bool, default=True)
 parser.add_argument('--issave', type=bool, default=False)
@@ -35,10 +35,10 @@ def init_driver(args):
     # 控制chromedriver服务
     driver_service = Service("../chromedriver")
     driver_service.command_line_args()
-    driver_service.start()  # 开启一个chromedriver.exe任务
+    # driver_service.start()  # 开启一个chromedriver.exe任务
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
     driver.implicitly_wait(10)
-    return driver,driver_service,p
+    return driver,driver_service
     # driver.maximize_window()
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
