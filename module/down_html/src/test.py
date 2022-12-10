@@ -38,9 +38,11 @@ def init_driver(args):
     driver_service.start()  # 开启一个chromedriver.exe任务
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
     driver.implicitly_wait(10)
-    return driver,driver_service,p
+    return driver,driver_service
     # driver.maximize_window()
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
+    handles = driver.window_handles
+    print(handles)
     driver.get(url)
 
 if __name__ == '__main__':
