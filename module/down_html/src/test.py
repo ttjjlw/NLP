@@ -41,6 +41,8 @@ def init_driver(args):
     return driver,driver_service
     # driver.maximize_window()
 def open_url(driver,url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
+    handles = driver.window_handles
+    print(handles)
     driver.get(url)
 
 if __name__ == '__main__':
