@@ -35,7 +35,7 @@ def init_driver(args):
     # 控制chromedriver服务
     driver_service = Service("../chromedriver")
     driver_service.command_line_args()
-    # driver_service.start()  # 开启一个chromedriver.exe任务
+    driver_service.start()  # 开启一个chromedriver.exe任务
     driver = webdriver.Chrome(executable_path=driver_path,options=option) #
     driver.implicitly_wait(10)
     return driver,driver_service

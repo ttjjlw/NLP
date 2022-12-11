@@ -10,7 +10,7 @@ from pprint import pprint
 # 导入时间模块
 import time
 import datetime
-
+from selenium.webdriver.chrome.service import Service
 """
 使用 selenium 获取所有视频详情页url地址
     selenium ---> 通过浏览器驱动 ----> 模拟操作浏览器
@@ -31,27 +31,34 @@ import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--save_path', type=str, default="./有趣的故事")
-parser.add_argument('--isheadless', type=bool, default=True)
+parser.add_argument('--isheadless', type=int, default=1)
+parser.add_argument('--ip', type=str, default="127.0.0.1:9220")
 parser.add_argument('--user_id', type=str,
                     default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
 
 args, _ = parser.parse_known_args()
+print(args)
 args.user_id = "MS4wLjABAAAA8xUmseK9-WQLGOWbjXCpYcJZU0HPGUf9-qOZ1S7oZ0Q"  # 科学旅行号
 args.user_id = "MS4wLjABAAAA8Nl-RLXjSF0kleaBbiP5bkEtuck5xzhr5mFCL_ybKTBv6NGM_wDbOS-Q8m5hsLAh"  # 无聊的知识
 args.user_id = "MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n"  # 有趣的故事
 # args.user_id = "MS4wLjABAAAAM0PAT7Egg1e6KKkmpNXPHoo53ul1BSP_c5GAo-o88D-tkIh__vQAmO5s48iYj4BA"  # 足球
 
 def driver_init(args):
+    port = args.ip.split(":")[-1].strip()
+    chrome_dir = r"D:\chromedata%s" % (port)
+
+    if not os.path.exists(chrome_dir):
+        os.makedirs(chrome_dir)
     if args.isheadless:
-        cmd = r'chrome.exe --remote-debugging-port=9220 --user-data-dir="D:\chromedataco" --headless --disable-gpu --no-sandbox --disable-popup-blocking'
+        cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking'%(port,port)
     else:
-        cmd = r'chrome.exe --remote-debugging-port=9220 --user-data-dir="D:\chromedataco"'
+        cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s"'%(port,port)
     p = os.popen(cmd)
     # print("p.read(): {}\n".format(p.read()))
 
     # 打开一个浏览器
     option = webdriver.ChromeOptions()
-    option.add_experimental_option("debuggerAddress", "127.0.0.1:9220")
+    option.add_experimental_option("debuggerAddress", args.ip)
     if args.isheadless:
         # 无头模式
         option.add_argument('headless')
@@ -59,9 +66,13 @@ def driver_init(args):
         option.add_argument('no-sandbox')
         # 大量渲染时候写入/tmp而非/dev/shm
         option.add_argument('disable-dev-shm-usage')
+        # 控制chromedriver服务
     driver_path = "../chromedriver"
+    driver_service = Service(driver_path)
+    driver_service.command_line_args()
+    driver_service.start()  # 开启一个chromedriver.exe任务
     driver = webdriver.Chrome(driver_path, options=option)
-    return driver
+    return driver,driver_service
 
 def main(args,driver):
     save_path = args.save_path
@@ -135,7 +146,8 @@ def main(args,driver):
                 z = os.getcwd()
                 data = video_response.content  # 获取返回的视频二进制数据
                 rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
-                new_title = re.sub(rstr, "_", title)  # 过滤不能作为文件名的字符，替换为下划线
+                new_title=re.sub(u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“！？【】——。])", "", title)
+                if new_title.strip()=='':continue
                 title_nolabel = new_title.split("#")[0]
                 new_title = '/%s.mp4' % new_title  # 视频文件的命名
                 if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title) or os.path.exists(save_path + "_move" + '/%s.mp4' % title_nolabel):
@@ -149,6 +161,7 @@ def main(args,driver):
                     f.write(video_url+'\n')
         except Exception as e:
             print(e)
+            # exit(1) 不能退出
 
 def get_user_id(url):
     t = re.findall('(https://v.douyin.com/.*?/)', url, re.S)
@@ -159,7 +172,20 @@ def get_user_id(url):
         url = html.headers['Location']
         url =url.split('/')[-1]
     return url
-
+def get_pid(args):
+    p = os.popen("netstat -ano|findstr %s" % args.ip.split(":")[-1].strip())
+    data = p.read()
+    lines = data.split('\n')
+    line_t = [line.strip().split('    ') for line in lines]
+    result = []
+    for l in line_t:
+        result.append([i.strip() for i in l if len(i.strip()) > 0])
+    for s in result:
+        if s[1] == args.ip:
+            pid = s[-1]
+            print('pid:', pid)
+            return pid
+    return None
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     dic_url={
@@ -172,8 +198,9 @@ if __name__ == '__main__':
              '足球':"https://v.douyin.com/hYuvxEm/",
              'LOL':"https://v.douyin.com/h2yWMCP/",
              '怀旧故事':'https://v.douyin.com/h8x7pQG/'}
+    dic_url={'名人大咖  ': "https://v.douyin.com/hrvcbE6/"}
     #  '电影解说':"https://v.douyin.com/hNxCfns/"
-    driver=driver_init(args)
+    driver,driver_service=driver_init(args)
     try:
         for name,url in dic_url.items():
             name=name.strip()
@@ -181,11 +208,22 @@ if __name__ == '__main__':
             args.user_id=get_user_id(url.strip())
             args.save_path='./'+name
             main(args,driver)
-    except:
-        os.popen("taskkill /f /t /im chromedriver.exe")
-        os.popen("taskkill /f /t /im chrome.exe")
+    except Exception as e:
+        print(e)
+        driver.quit()
+        driver_service.stop()
+        pid = get_pid(args)
+        if pid:
+            os.popen("taskkill /pid %s -t -f" % pid)
+        else:
+            print("%s 的进程没有杀死" % args.ip)
         print("下载失败，然后终止")
         exit(0)
-    os.popen("taskkill /f /t /im chromedriver.exe")
-    os.popen("taskkill /f /t /im chrome.exe")
+    driver.quit()
+    driver_service.stop()
+    pid = get_pid(args)
+    if pid:
+        os.popen("taskkill /pid %s -t -f" % pid)
+    else:
+        print("%s 的进程没有杀死" % args.ip)
     print("下载全部成功，然后终止")
