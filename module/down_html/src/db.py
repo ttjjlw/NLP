@@ -15,7 +15,7 @@ parser.add_argument('--video_addr', type=str, default="gaoxiaozuqiu")
 parser.add_argument('--video_label', type=str, default='label1,label2')
 parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
-parser.add_argument('--isheadless', type=int, default=1)
+parser.add_argument('--isheadless', type=int, default=0)
 parser.add_argument('--num', type=int, default=1)
 
 args, _ = parser.parse_known_args()
@@ -212,6 +212,7 @@ def main(args,driver):
         shutil.move(path_mp4, move_dir)
         idx += 1
         if idx > args.num - 1: break
+    if idx==0:ValueError("视频目录为空，请先下载视频")
     # 封面地址获取
     # path_cover = ""
     # for i in path.iterdir():
