@@ -11,12 +11,12 @@ import argparse, random
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser = argparse.ArgumentParser()
-parser.add_argument('--video_addr', type=str, default="suiji")
+parser.add_argument('--video_addr', type=str, default="gaoxiaozuqiu")
 parser.add_argument('--video_label', type=str, default='label1,label2')
-parser.add_argument('--ip', type=str, default='127.0.0.1:9224')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=1)
-parser.add_argument('--num', type=int, default=2)
+parser.add_argument('--num', type=int, default=1)
 
 args, _ = parser.parse_known_args()
 cate1 = "知识"
@@ -34,6 +34,7 @@ if args.video_addr == 'huaijiu':
 if args.video_addr == 'sense': args.video_addr = '/有意思的视频'
 if args.video_addr == 'youqu': args.video_addr = '/有趣的故事'
 if args.video_addr == 'suiji': args.video_addr = random.choice(["/有意思的视频"])
+if args.video_addr == 'gaoxiaozuqiu': args.video_addr = '/搞笑足球'
 
 pwd_dir = os.getcwd()
 print("pwd_dir:", pwd_dir)

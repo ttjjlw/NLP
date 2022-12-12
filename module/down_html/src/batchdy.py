@@ -32,6 +32,7 @@ import subprocess
 parser = argparse.ArgumentParser()
 parser.add_argument('--save_path', type=str, default="./有趣的故事")
 parser.add_argument('--isheadless', type=int, default=1)
+parser.add_argument('--istest', type=int, default=0)
 parser.add_argument('--ip', type=str, default="127.0.0.1:9220")
 parser.add_argument('--user_id', type=str,
                     default='MS4wLjABAAAAkzRSrOuSsM4Z1Ricsddumx_aSvX0jmOPcQR2qTs3PEtImBD8BomLrqvtIOBKOL0P')
@@ -189,6 +190,7 @@ def get_pid(args):
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     dic_url={
+        '搞笑足球': "https://v.douyin.com/hAGB8EA/",
         '名人大咖  ': "https://v.douyin.com/hrvcbE6/",
         '爆笑':'https://v.douyin.com/hFjyf2B/',
              '有趣的故事':"MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n",
@@ -198,7 +200,8 @@ if __name__ == '__main__':
              '足球':"https://v.douyin.com/hYuvxEm/",
              'LOL':"https://v.douyin.com/h2yWMCP/",
              '怀旧故事':'https://v.douyin.com/h8x7pQG/'}
-    dic_url={'名人大咖  ': "https://v.douyin.com/hrvcbE6/"}
+    if args.istest:
+        dic_url={'搞笑足球  ': "https://v.douyin.com/hAGB8EA/"}
     #  '电影解说':"https://v.douyin.com/hNxCfns/"
     driver,driver_service=driver_init(args)
     try:

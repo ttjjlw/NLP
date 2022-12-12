@@ -54,6 +54,7 @@ def init_driver(args):
 
 def open_url(driver, url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
+    return
 
 
 def save_video_url(driver, file):
@@ -136,7 +137,7 @@ def get_pid(args):
 
 def main(args):
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
-    ip_lis = ["127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124']
+    ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #zuqiu wode dide huangde
     if args.issave:
         file = open('./videoB_url.txt', 'w')
         for ip in ip_lis:
