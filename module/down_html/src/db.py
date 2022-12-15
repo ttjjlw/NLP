@@ -16,7 +16,7 @@ parser.add_argument('--video_label', type=str, default='label1,label2')
 parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=0)
-parser.add_argument('--num', type=int, default=1)
+parser.add_argument('--num', type=int, default=3)
 
 args, _ = parser.parse_known_args()
 cate1 = "知识"
@@ -33,7 +33,7 @@ if args.video_addr == 'huaijiu':
     args.video_addr = '/怀旧故事'
 if args.video_addr == 'sense': args.video_addr = '/有意思的视频'
 if args.video_addr == 'youqu': args.video_addr = '/有趣的故事'
-if args.video_addr == 'suiji': args.video_addr = random.choice(["/有意思的视频"])
+if args.video_addr == 'suiji': args.video_addr = random.choice(["/有意思的视频",'/名人大咖'])
 if args.video_addr == 'gaoxiaozuqiu': args.video_addr = '/搞笑足球'
 
 pwd_dir = os.getcwd()
@@ -97,7 +97,7 @@ def publish_bilibili(args, driver, path_mp4):
     label = '#'.join(label)
     if label: args.video_label = label
     args.video_describe = args.video_label
-    if len(title) <= 6: title = args.video_label
+    if len(title) <= 6 and len(args.video_label)>len(title): title = args.video_label
 
     try:
         alert = driver.switch_to.alert()
@@ -142,10 +142,9 @@ def publish_bilibili(args, driver, path_mp4):
     # 输入标题
 
     try:
-        driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)  # 如果能执行就重新输入，否则不输入
         driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').clear()
-        time.sleep(0.2)
-        driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)
+        time.sleep(1)
+        driver.find_element_by_xpath('//input[contains(@placeholder,"标题")]').send_keys(title)  # 如果能执行就重新输入，否则不输入
     except:
         pass
     # 选择分类
@@ -181,6 +180,7 @@ def publish_bilibili(args, driver, path_mp4):
     # 点击发布
     # driver.find_element_by_xpath('//button[text()="立即投稿"]').click()
     # driver.find_element_by_xpath('//*[@id="video-up-app"]/div[2]/div/div/div[1]/div[3]/div[15]/div/span').click()
+    time.sleep(3)
     try:
         driver.find_element_by_xpath('//*[@class="submit-add" and text()="立即投稿"]').click()
     except:
@@ -246,7 +246,7 @@ def get_pid(args):
 
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
-    print("ip：", args.ip)
+    print("ip:", args.ip)
     # if args.ip[-4:]=='9222':exit(0)
     try:
         driver,driver_service=init_driver(args)
