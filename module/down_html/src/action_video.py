@@ -139,8 +139,8 @@ def get_pid(args):
 def main(args):
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #zuqiu wode dide huangde
-    minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965, 7962,7963,0739(1265need adentity)
-    ip_lis=minsheng2_huaji3+ip_lis
+    # minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965, 7962,7963,0739(1265need adentity)
+    # ip_lis=minsheng2_huaji3+ip_lis
     # ip_lis=['127.0.0.1:9126']
     if args.issave:
         file = open('./videoB_url.txt', 'w')
