@@ -196,6 +196,7 @@ if __name__ == '__main__':
              '有趣的故事':"MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n",
              '有趣的故事 ':"https://v.douyin.com/h8xHqDn/",
              '有意思的视频 ':"https://v.douyin.com/h51pSb4/",
+              '有意思的视频  ':'https://v.douyin.com/hrvcbE6/https://v.douyin.com/hrvcbE6/',
              '名人大咖':"https://v.douyin.com/h8xccGx/",
              '名人大咖 ':"https://v.douyin.com/h8QN6Pq/",
              '足球':"https://v.douyin.com/hYuvxEm/",
