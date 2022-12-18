@@ -32,9 +32,12 @@ if args.video_addr == 'minren':
 if args.video_addr == 'huaijiu':
     args.video_addr = '/怀旧故事'
 if args.video_addr == 'sense': args.video_addr = '/有意思的视频'
+if args.video_addr == 'santi': args.video_addr = '/三体'
 if args.video_addr == 'youqu': args.video_addr = '/有趣的故事'
 if args.video_addr == 'suiji': args.video_addr = random.choice(["/有意思的视频",'/名人大咖'])
 if args.video_addr == 'gaoxiaozuqiu': args.video_addr = '/搞笑足球'
+if args.video_addr == 'zuqiu': args.video_addr = '/足球'
+if args.video_addr == 'lol': args.video_addr = '/LOL'
 
 pwd_dir = os.getcwd()
 print("pwd_dir:", pwd_dir)
@@ -163,8 +166,11 @@ def publish_bilibili(args, driver, path_mp4):
 
     # 选择标签
     time.sleep(2)
-    driver.find_element_by_xpath(
-        '//*[text()="参与话题："]/..//*[@class="tag-topic-list"]/span[1]//*[@class="hot-tag-item"]').click()
+    try:
+        driver.find_element_by_xpath(
+            '//*[text()="参与话题："]/..//*[@class="tag-topic-list"]/span[1]//*[@class="hot-tag-item"]').click()
+    except Exception as e:
+        print(e)
     for label in args.video_label.strip().split('#'):
         print("lable:", label)
         driver.find_element_by_xpath('//input[@placeholder="按回车键Enter创建标签"]').send_keys(label)

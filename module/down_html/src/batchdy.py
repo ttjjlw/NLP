@@ -190,6 +190,7 @@ def get_pid(args):
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     dic_url={
+        '三体': "https://v.douyin.com/h9uWDc5/",
         '搞笑足球': "https://v.douyin.com/hAGB8EA/",
         '名人大咖  ': "https://v.douyin.com/hrvcbE6/",
         '爆笑':'https://v.douyin.com/hFjyf2B/',
