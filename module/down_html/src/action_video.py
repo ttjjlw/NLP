@@ -119,6 +119,27 @@ def play_video(driver, url):
     time.sleep(duration * 0.2)
     return duration
 
+def join_act(driver,url='https://member.bilibili.com/platform/allowance/incomeCenter/pc?from=side_navigation'):
+    try:
+        driver.get(url)
+        driver.find_element_by_xpath('//*[@class ="rec-more"]//span[text()="查看更多 "]').click()
+        lis = driver.find_elements_by_css_selector('#app > div > div.content-page > div.home-page > div.content > div.punch-crad-list > div')
+        for idx,li in enumerate(lis):
+            try:
+                elem=li.find_element_by_css_selector('#app > div > div.content-page > div.home-page > div.content > div.punch-crad-list > div:nth-child(%s) > div > div.item-btn'%(str(idx+1)))
+                text=elem.get_attribute("textContent")
+                if text.strip()=="去报名":
+                    driver.execute_script("arguments[0].click();", elem)
+                    # elem.click()
+                else:
+                    print(text)
+            except Exception as e:
+                print(e)
+        print("自动参加活动成功")
+    except Exception as e:
+        print("自动参加活动失败")
+        print(e)
+
 
 def get_pid(args):
     p = os.popen("netstat -ano|findstr %s" % args.ip.split(":")[-1].strip())
@@ -141,7 +162,7 @@ def main(args):
     ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #zuqiu wode dide huangde
     # minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965, 7962,7963,0739(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
-    # ip_lis=['127.0.0.1:9126']
+    # ip_lis=['127.0.0.1:9122']
     if args.issave:
         file = open('./videoB_url.txt', 'w')
         for ip in ip_lis:
@@ -151,6 +172,7 @@ def main(args):
                 open_url(driver)
                 save_video_url(driver, file)
                 print('ip为：%s的视频链接下载完毕' % ip)
+                join_act(driver)
                 driver.quit()
                 driver_service.stop()
                 pid = get_pid(args)
