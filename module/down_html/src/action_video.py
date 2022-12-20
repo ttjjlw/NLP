@@ -140,6 +140,30 @@ def join_act(driver,url='https://member.bilibili.com/platform/allowance/incomeCe
         print("自动参加活动失败")
         print(e)
 
+def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMission?task_id=20221205&task_type=2&href=index_web_msg'):
+    driver.get(url)
+    time.sleep(3)
+    elem=driver.find_element_by_xpath('//*[@class="desc" and text()="待领取"]/following-sibling::*[@class="coin-number"]')
+    jine=float(elem.get_attribute("textContent"))
+    if jine>0:
+        jiesu=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="已结束"]')
+        ing=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="进行中"]')
+        baokuang=driver.find_element_by_xpath('//*[@class="select-by-task"]//*[text()="爆款"]')
+        for elem in [ing,baokuang]:
+            isselect=elem.get_attribute("class")
+            if isselect=="unselected":
+                driver.execute_script("arguments[0].click();", elem)
+
+        lis=driver.find_elements_by_xpath('//*[@class="project-content"]/div')
+        for idx,li in enumerate(lis):
+            elem = li.find_element_by_xpath('//*[@class="project-content"]/div[%d]' % (idx + 1))
+            elem=elem.find_element_by_xpath('//button[contains(@class,"bcc-button get-challenge")]//span')
+            isward=elem.get_attribute("textContent")
+            if isward=="待领奖":
+                continue
+                driver.execute_script("arguments[0].click();", elem)
+
+
 
 def get_pid(args):
     p = os.popen("netstat -ano|findstr %s" % args.ip.split(":")[-1].strip())
@@ -162,7 +186,8 @@ def main(args):
     ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #zuqiu wode dide huangde
     # minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965, 7962,7963,0739(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
-    # ip_lis=['127.0.0.1:9122']
+    if args.istest:
+        ip_lis=['127.0.0.1:9121']
     if args.issave:
         file = open('./videoB_url.txt', 'w')
         for ip in ip_lis:
@@ -172,7 +197,8 @@ def main(args):
                 open_url(driver)
                 save_video_url(driver, file)
                 print('ip为：%s的视频链接下载完毕' % ip)
-                join_act(driver)
+                # join_act(driver)
+                # get_award(driver)
                 driver.quit()
                 driver_service.stop()
                 pid = get_pid(args)

@@ -16,7 +16,7 @@ parser.add_argument('--video_label', type=str, default='label1,label2')
 parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=0)
-parser.add_argument('--num', type=int, default=3)
+parser.add_argument('--num', type=int, default=1)
 
 args, _ = parser.parse_known_args()
 cate1 = "知识"
@@ -259,14 +259,14 @@ if __name__ == '__main__':
         main(args,driver)
     except Exception as e:
         print(e)
-        driver.quit()
-        driver_service.stop()
         pid = get_pid(args)
         if pid:
             os.popen("taskkill /pid %s -t -f" % pid)
         else:
             print("%s 的进程没有杀死" % args.ip)
         print("投稿失败，然后终止")
+        driver.quit()
+        driver_service.stop()
         exit(0)
     driver.quit()
     driver_service.stop()
