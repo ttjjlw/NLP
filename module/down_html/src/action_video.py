@@ -13,8 +13,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--ip', type=str, default='127.0.0.1:9121')
 parser.add_argument('--isheadless', type=int, default=1)
 parser.add_argument('--istest', type=int, default=1)
-parser.add_argument('--isplay', type=int, default=0)
-parser.add_argument('--issave', type=int, default=1)
+parser.add_argument('--isplay', type=int, default=1)
+parser.add_argument('--issave', type=int, default=0)
 
 args, _ = parser.parse_known_args()
 if args.istest:args.isheadless=0
@@ -112,12 +112,17 @@ def play_video(driver, url):
 
     duration = to_sec(duration)
     print(duration)
-    time.sleep(duration * 0.8)
+    play_rate=1
+    if duration>30:
+        play_rate=0.5
+        elem=driver.find_element_by_xpath('//*[@class="bpx-player-ctrl-playbackrate-menu-item " and @data-value="2"]')
+        driver.execute_script("arguments[0].click();", elem)
+    time.sleep(duration * 0.8*play_rate)
     element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
     if element.get_attribute("class") == "like":
         element.click()
-    time.sleep(duration * 0.2)
-    return duration
+    time.sleep(duration * 0.2*play_rate)
+    return duration*play_rate
 
 def join_act(driver,url='https://member.bilibili.com/platform/allowance/incomeCenter/pc?from=side_navigation'):
     try:
@@ -183,11 +188,11 @@ def get_pid(args):
 
 def main(args):
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
-    ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #zuqiu wode dide huangde
-    # minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965, 7962,7963,0739(1265need adentity)
-    # ip_lis=minsheng2_huaji3+ip_lis
-    if args.istest:
-        ip_lis=['127.0.0.1:9121']
+    ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #gaoxiaozuqiu wode dide huangde
+    minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
+    ip_lis=minsheng2_huaji3+ip_lis
+    # if args.istest:
+    #     ip_lis=['127.0.0.1:9121']
     if args.issave:
         file = open('./videoB_url.txt', 'w')
         for ip in ip_lis:
