@@ -10,11 +10,12 @@ from selenium.webdriver.chrome.service import Service
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser = argparse.ArgumentParser()
-parser.add_argument('--ip', type=str, default='127.0.0.1:9121')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9122')
 parser.add_argument('--isheadless', type=int, default=1)
-parser.add_argument('--istest', type=int, default=1)
+parser.add_argument('--istest', type=int, default=2)
 parser.add_argument('--isplay', type=int, default=1)
 parser.add_argument('--issave', type=int, default=0)
+parser.add_argument('--isgetdata', type=int, default=0)
 
 args, _ = parser.parse_known_args()
 if args.istest:args.isheadless=0
@@ -121,6 +122,12 @@ def play_video(driver, url):
     element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
     if element.get_attribute("class") == "like":
         element.click()
+    element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]/following-sibling::span[1]')
+    if element.get_attribute("class") == "coin":
+        element.click()
+        elem=driver.find_element_by_xpath('//*[@class="bi-btn" and text()="确定"]')
+        driver.execute_script("arguments[0].click();", elem)
+
     time.sleep(duration * 0.2*play_rate)
     return duration*play_rate
 
@@ -150,7 +157,7 @@ def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMissi
     time.sleep(3)
     elem=driver.find_element_by_xpath('//*[@class="desc" and text()="待领取"]/following-sibling::*[@class="coin-number"]')
     jine=float(elem.get_attribute("textContent"))
-    if jine>0:
+    if jine>=0:
         jiesu=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="已结束"]')
         ing=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="进行中"]')
         baokuang=driver.find_element_by_xpath('//*[@class="select-by-task"]//*[text()="爆款"]')
@@ -168,7 +175,38 @@ def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMissi
                 continue
                 driver.execute_script("arguments[0].click();", elem)
 
-
+def get_core_data(driver,ip,date,url='https://member.bilibili.com/platform/home'):
+    try:
+        record=ip+'\t'+date+'\n'
+        driver.get(url)
+        time.sleep(2)
+        lis = driver.find_elements_by_css_selector('#cc-body > div.home-wrap.cc-content-body > div.data-card > div > div.section.video.clearfix > div.section-row.bcc-row.first > div')
+        res=[]
+        tt=['昨日新增粉丝数', '昨日视频播放数', '昨日评论数', '昨日弹幕数']
+        for idx,li in enumerate(lis):
+            # elem=li.find_element_by_css_selector('#cc-body > div.home-wrap.cc-content-body > div.data-card > div > div.section.video.clearfix > div.section-row.bcc-row.first > div:nth-child(%d) > div > div > div.value > span'%(idx+1))
+            elem=li.find_element_by_css_selector('#cc-body > div.home-wrap.cc-content-body > div.data-card > div > div.section.video.clearfix > div.section-row.bcc-row.first > div:nth-child(%d) > div > div > div.data-card-top > div.diff > span'%(idx+1))
+            text=elem.get_attribute("textContent")
+            text=tt[idx]+': ' + text
+            res.append(text)
+        like_num=driver.find_element_by_css_selector('#cc-body > div.home-wrap.cc-content-body > div.data-card > div > div.section.video.clearfix > div:nth-child(2) > div:nth-child(1) > div > div > div.data-card-top > div.diff > span').get_attribute("textContent")
+        res.append('昨日点赞数：'+like_num)
+        #get 昨日收益
+        shouyidate,shouyi,yearshouyi='xx','0.0','0.0'
+        try:
+            shouyidate=driver.find_element_by_xpath('//*[contains(text(),"日收益")]').get_attribute("textContent")
+            shouyi=driver.find_element_by_xpath('//*[contains(text(),"日收益")]/following-sibling::p').get_attribute("textContent")
+            yearshouyi=driver.find_element_by_xpath('//*[contains(text(),"近一年总收益")]/following-sibling::p').get_attribute("textContent")
+        except Exception as e:
+            print(e)
+            print('%s:获取收益数据失败'%ip)
+        res.append(shouyidate + '：' + shouyi)
+        res.append('年收益：' + yearshouyi)
+        with open('./core_data.txt','a') as f:
+            f.write(record+'\t'.join(res)+'\n')
+    except Exception as e:
+        print(e)
+        print('获取核心数据失败')
 
 def get_pid(args):
     p = os.popen("netstat -ano|findstr %s" % args.ip.split(":")[-1].strip())
@@ -187,14 +225,17 @@ def get_pid(args):
 
 
 def main(args):
-    print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
-    ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #gaoxiaozuqiu wode dide huangde
-    minsheng2_huaji3=['127.0.0.1:9129','127.0.0.1:9128','127.0.0.1:9127','127.0.0.1:9126']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
-    ip_lis=minsheng2_huaji3+ip_lis
-    # if args.istest:
-    #     ip_lis=['127.0.0.1:9121']
+    date=datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分')
+    print(date)
+    file_nm='./videoB_url.txt'
+    ip_lis = ['127.0.0.1:9225',"127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224'] #gaoxiaozuqiu wode dide huangde
+    # minsheng2_huaji3=['127.0.0.1:9229','127.0.0.1:9228','127.0.0.1:9227','127.0.0.1:9226']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
+    # ip_lis=minsheng2_huaji3+ip_lis
+    if args.istest:
+        # ip_lis=['127.0.0.1:9229']
+        file_nm='./videoB_url_test.txt'
     if args.issave:
-        file = open('./videoB_url.txt', 'w')
+        file = open(file_nm, 'w')
         for ip in ip_lis:
             try:
                 args.ip = ip
@@ -202,8 +243,6 @@ def main(args):
                 open_url(driver)
                 save_video_url(driver, file)
                 print('ip为：%s的视频链接下载完毕' % ip)
-                # join_act(driver)
-                # get_award(driver)
                 driver.quit()
                 driver_service.stop()
                 pid = get_pid(args)
@@ -213,8 +252,6 @@ def main(args):
             except Exception as e:
                 print(e)
                 file.close()
-                driver.quit()
-                driver_service.stop()
                 for ip in ip_lis:
                     args.ip = ip
                     pid = get_pid(args)
@@ -223,6 +260,8 @@ def main(args):
                     else:
                         print("%s 的进程没有杀死" % args.ip)
                 print("下载失败退出")
+                driver.quit()
+                driver_service.stop()
                 exit()
         file.close()
         print("下载成功退出")
@@ -230,7 +269,7 @@ def main(args):
     if args.isplay:
         print("start play...")
         try:
-            with open('./videoB_url.txt', 'r') as f:
+            with open(file_nm, 'r') as f:
                 lines = f.readlines()
             driver, driver_service = init_driver(args)
             duration_sum = 0
@@ -242,14 +281,15 @@ def main(args):
             print("ip为:%s，总共观看时长%s秒" % (args.ip, duration_sum))
         except Exception as e:
             print(e)
-            driver.quit()
-            driver_service.stop()
             pid = get_pid(args)
             if pid:
                 os.popen("taskkill /pid %s -t -f" % pid)
             else:
                 print("%s 的进程没有杀死" % args.ip)
             print("自动播放失败退出")
+            driver.quit()
+            driver_service.stop()
+            exit()
         driver.quit()
         driver_service.stop()
         pid = get_pid(args)
@@ -258,6 +298,37 @@ def main(args):
         else:
             print("%s 的进程没有杀死" % args.ip)
         print("自动播放成功退出")
+
+    if args.isgetdata:
+        for ip in ip_lis:
+            print('开始获取%s的数据'%ip)
+            args.ip = ip
+            try:
+                driver, driver_service = init_driver(args)
+                get_core_data(driver,ip,date)
+                join_act(driver)
+                # get_award(driver)
+                pid = get_pid(args)
+                driver.quit()
+                driver_service.stop()
+                if pid:
+                    os.popen("taskkill /pid %s -t -f" % pid)
+                    print("%s的进程被杀死" % args.ip)
+            except Exception as e:
+                print(e)
+                for ip in ip_lis:
+                    args.ip = ip
+                    pid = get_pid(args)
+                    if pid:
+                        os.popen("taskkill /pid %s -t -f" % pid)
+                    else:
+                        print("%s 的进程没有杀死" % args.ip)
+                print("%s：获取核心数据失败退出"%ip)
+                driver.quit()
+                driver_service.stop()
+                exit()
+        print("获取核心数据成功退出")
+
 
 
 if __name__ == '__main__':
