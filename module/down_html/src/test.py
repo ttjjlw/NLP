@@ -97,8 +97,14 @@ for li in lis:
         html_data = requests.utils.unquote(html_data)
         # 转换数据类型
         json_data = json.loads(html_data)
+        print(len(json_data))
         # 字典取值 字典取值, 根据冒号左边的内容, 提取冒号右边的内容
-        video_url = 'https:' + json_data['35']['aweme']['detail']['video']['bitRateList'][0]['playAddr'][0]['src']
+        for k in json_data:
+            if'aweme' in json_data[k]:
+                if 'detail' in json_data[k]['aweme']:
+                    video_url = 'https:' + json_data[k]['aweme']['detail']['video']['bitRateList'][0]['playAddr'][0]['src']
+                else:
+                    raise ValueError('video_url 取值不正确')
         print(title)
         print(video_url)
         # 保存数据
