@@ -14,8 +14,8 @@ parser.add_argument('--ip', type=str, default='127.0.0.1:9122')
 parser.add_argument('--isheadless', type=int, default=1)
 parser.add_argument('--istest', type=int, default=1)
 parser.add_argument('--isplay', type=int, default=0)
-parser.add_argument('--issave', type=int, default=1)
-parser.add_argument('--isgetdata', type=int, default=0)
+parser.add_argument('--issave', type=int, default=0)
+parser.add_argument('--isgetdata', type=int, default=1)
 
 args, _ = parser.parse_known_args()
 if args.istest:args.isheadless=0
@@ -121,10 +121,10 @@ def play_video(driver, url):
     time.sleep(duration * 0.8*play_rate)
     element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]')
     if element.get_attribute("class") == "like":
-        element.click()
+        driver.execute_script("arguments[0].click();", element)
     element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]/following-sibling::span[1]')
     if element.get_attribute("class") == "coin":
-        element.click()
+        driver.execute_script("arguments[0].click();", element)
         elem=driver.find_element_by_xpath('//*[@class="bi-btn" and text()="确定"]')
         driver.execute_script("arguments[0].click();", elem)
 
@@ -153,27 +153,35 @@ def join_act(driver,url='https://member.bilibili.com/platform/allowance/incomeCe
         print(e)
 
 def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMission?task_id=20221205&task_type=2&href=index_web_msg'):
-    driver.get(url)
-    time.sleep(3)
-    elem=driver.find_element_by_xpath('//*[@class="desc" and text()="待领取"]/following-sibling::*[@class="coin-number"]')
-    jine=float(elem.get_attribute("textContent"))
-    if jine>=0:
-        jiesu=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="已结束"]')
-        ing=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="进行中"]')
-        baokuang=driver.find_element_by_xpath('//*[@class="select-by-task"]//*[text()="爆款"]')
-        for elem in [ing,baokuang]:
-            isselect=elem.get_attribute("class")
-            if isselect=="unselected":
-                driver.execute_script("arguments[0].click();", elem)
+    try:
+        driver.get(url)
+        time.sleep(3)
+        elem=driver.find_element_by_xpath('//*[@class="desc" and text()="待领取"]/following-sibling::*[@class="coin-number"]')
+        jine=float(elem.get_attribute("textContent"))
+        if jine>0:
+            jiesu=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="已结束"]')
+            ing=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="进行中"]')
+            baokuang=driver.find_element_by_xpath('//*[@class="select-by-task"]//*[text()="爆款"]')
+            for elem in [jiesu,ing,baokuang]:
+                isselect=elem.get_attribute("class")
+                if isselect=="unselected":
+                    driver.execute_script("arguments[0].click();", elem)
 
-        lis=driver.find_elements_by_xpath('//*[@class="project-content"]/div')
-        for idx,li in enumerate(lis):
-            elem = li.find_element_by_xpath('//*[@class="project-content"]/div[%d]' % (idx + 1))
-            elem=elem.find_element_by_xpath('//button[contains(@class,"bcc-button get-challenge")]//span')
-            isward=elem.get_attribute("textContent")
-            if isward=="待领奖":
-                continue
-                driver.execute_script("arguments[0].click();", elem)
+            lis=driver.find_elements_by_xpath('//*[@class="project-content"]/div')
+            for idx,li in enumerate(lis):
+                elem = li.find_element_by_xpath('//*[@class="project-content"]/div[%d]//*[contains(@class,"bcc-button get-challenge")]//span' % (idx + 2))
+                # elem=elem.find_element_by_xpath('//button[contains(@class,"bcc-button get-challenge")]//span')
+                isward=elem.get_attribute("textContent")
+                if isward=="待领奖":
+                    continue
+                    driver.execute_script("arguments[0].click();", elem)
+                    #todo 点击领奖之后还有一步
+                    print('领取奖励成功')
+                elif isward=="已领奖":
+                    break
+    except Exception as e:
+        print(e)
+        print('领取奖励失败')
 
 def get_core_data(driver,ip,date,url='https://member.bilibili.com/platform/home'):
     try:
@@ -228,11 +236,12 @@ def main(args):
     date=datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分')
     print(date)
     file_nm='./videoB_url.txt'
-    ip_lis = ['127.0.0.1:9225',"127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224'] #gaoxiaozuqiu wode dide huangde
+    ip_lis = ['127.0.0.1:9225',"127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224'] #gaoxiaozuqiu18750105941 wode dide 18305951310 huangde18829903397
+    # ip_lis = ['127.0.0.1:9125',"127.0.0.1:9122", '127.0.0.1:9123', '127.0.0.1:9124'] #gaoxiaozuqiu wode dide huangde
     # minsheng2_huaji3=['127.0.0.1:9229','127.0.0.1:9228','127.0.0.1:9227','127.0.0.1:9226']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
     if args.istest:
-        # ip_lis=['127.0.0.1:9229']
+        ip_lis=['127.0.0.1:9121']
         file_nm='./videoB_url_test.txt'
     if args.issave:
         file = open(file_nm, 'w')
@@ -307,7 +316,7 @@ def main(args):
                 driver, driver_service = init_driver(args)
                 get_core_data(driver,ip,date)
                 join_act(driver)
-                # get_award(driver)
+                get_award(driver)
                 pid = get_pid(args)
                 driver.quit()
                 driver_service.stop()
