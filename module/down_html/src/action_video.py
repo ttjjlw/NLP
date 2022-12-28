@@ -12,9 +12,9 @@ from selenium.webdriver.chrome.service import Service
 parser = argparse.ArgumentParser()
 parser.add_argument('--ip', type=str, default='127.0.0.1:9122')
 parser.add_argument('--isheadless', type=int, default=1)
-parser.add_argument('--istest', type=int, default=2)
-parser.add_argument('--isplay', type=int, default=1)
-parser.add_argument('--issave', type=int, default=0)
+parser.add_argument('--istest', type=int, default=1)
+parser.add_argument('--isplay', type=int, default=0)
+parser.add_argument('--issave', type=int, default=1)
 parser.add_argument('--isgetdata', type=int, default=0)
 
 args, _ = parser.parse_known_args()

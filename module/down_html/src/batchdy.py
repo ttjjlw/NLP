@@ -115,6 +115,10 @@ def main(args,driver):
     for idx,li in enumerate(lis):
         try:
             url = li.find_element_by_css_selector('a').get_attribute('href')
+            item_id=url.strip().split('/')[-1]
+            if item_id+'\n' in downloaded_url:
+                print('%s该item_id已下载过'%(str(idx)))
+                continue
             """
             1. 发送请求, 模拟浏览器对于url地址发送请求
                 需要注意什么细节:
@@ -134,7 +138,6 @@ def main(args,driver):
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36'
             }
             response = requests.get(url, headers=headers)
-            title = re.findall('<title data-react-helmet="true">(.*?)- 抖音</title>', response.text)[0]
             html_data = re.findall('<script id="RENDER_DATA" type="application/json">(.*?)</script', response.text)[0]
             # 解码  ---> requests简单使用 方法 系统课程都教授了
             # requests.utils.unquote 解码  requests.utils.quote 编码
@@ -148,35 +151,45 @@ def main(args,driver):
                     if 'detail' in json_data[k]['aweme']:
                         video_url = 'https:' + \
                                     json_data[k]['aweme']['detail']['video']['bitRateList'][0]['playAddr'][0]['src']
+                        #video_url的形式，目前用的是第三种
+                        # 1、'https://aweme.snssdk.com/aweme/v1/play/?video_id=https://sf3-cdn-tos.douyinstatic.com/obj/ies-music/1651073949424696.mp3&ratio=720p&line=0'
+                        # 2、'https://aweme.snssdk.com/aweme/v1/play/?video_id=v0300fg10000cegoaa3c77uem4am2dm0&ratio=720p&line=0'
+                        # 3、'https://v26-web.douyinvod.com/c7e88fe2620a5b716e9b0c57e387ecbc/63a9cea3/video/tos/cn/tos-cn-ve-15c001-alinc2/4b0c31c5c0c24392ac46bfbc9b00555a/?a=6383&ch=26&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=2642&bt=2642&cs=0&ds=4&ft=LjhJEL998xl8uEemg0P5H4eaciDXtQH-95QEeR~q6KLD1Ini&mime_type=video_mp4&qs=0&rc=NWg4Z2c6NGU2aGY3M2VmPEBpam8zdjg6ZjQzZjMzNGkzM0AtYC4yXzY0XmExXzRiXzM2YSNkcWhzcjRnXm5gLS1kLS9zcw%3D%3D&l=2022122623303323F7F280CBF7BB3025A0&btag=38000'
+                        title=json_data[k]['aweme']['detail']['desc']
                     else:
                         raise ValueError('video_url 取值不正确')
             # print(title)
             # print(video_url)
-            if video_url+'\n' in downloaded_url:
-                print('%s该链接已下载过'%(str(idx)))
-                continue
+            new_title = re.sub(
+                u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“！？【】——。])", "", title)
+            if new_title.strip() == '': continue
+            # if title_is_exists(new_title,idx,save_path):continue
             video_response = requests.get(url=video_url, headers=headers)  # 发送下载视频的网络请求
             if video_response.status_code == 200:  # 如果请求成功
                 z = os.getcwd()
                 data = video_response.content  # 获取返回的视频二进制数据
                 rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
-                new_title=re.sub(u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“！？【】——。])", "", title)
-                if new_title.strip()=='':continue
-                title_nolabel = new_title.split("#")[0]
-                new_title = '/%s.mp4' % new_title  # 视频文件的命名
-                if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title) or os.path.exists(save_path + "_move" + '/%s.mp4' % title_nolabel):
-                    print("%s%s 已下载过" % (str(idx),new_title))
-                    continue
+
                 file = open(save_path + new_title, 'wb')  # 创建open对象
                 file.write(data)  # 写入数据
                 file.close()  # 关闭
                 print(str(idx) + new_title + " 视频下载成功！")
                 with open('./downloaded_url/video_url.txt', 'a') as f:
-                    f.write(video_url+'\n')
+                    f.write(item_id+'\n')
         except Exception as e:
             print(e)
             # exit(1) 不能退出
 
+def title_is_exists(new_title,idx,save_path):
+
+    title_nolabel = new_title.split("#")[0]
+    new_title = '/%s.mp4' % new_title  # 视频文件的命名
+    if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title) or os.path.exists(
+            save_path + "_move" + '/%s.mp4' % title_nolabel):
+        print("%s%s 已下载过" % (str(idx), new_title))
+        return True
+    else:
+        return False
 def get_user_id(url):
     t = re.findall('(https://v.douyin.com/.*?/)', url, re.S)
     if len(t) != 0:
