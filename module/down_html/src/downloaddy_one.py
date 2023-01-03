@@ -25,13 +25,15 @@ def dy(txt):
         # print(url2)
         item_ids = re.findall('video\/(.*?)\/\?region', url2)
         if len(item_ids)!=0:
-
-            # video_url,title,headers=download1(item_id=item_ids[0])
-            video_url,title,headers=download2(item_id=item_ids[0])
-            if video_url+'\n' in downloaded_url:
+            item_id=item_ids[0]
+            if item_id+'\n' in downloaded_url:
                 print('该链接已下载过')
                 return
+            # video_url,title,headers=download1(item_id=item_ids[0])
+            video_url,title,headers=download2(item_id=item_id)
 
+            new_title = re.sub(
+                u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“！？【】——。])", "", title)
             video_response = requests.get(url=video_url, headers=headers)  # 发送下载视频的网络请求
             if video_response.status_code == 200:  # 如果请求成功
                 z = os.getcwd()
@@ -39,15 +41,13 @@ def dy(txt):
                 if not os.path.exists(temp_path):
                     os.makedirs(temp_path)
                 data = video_response.content  # 获取返回的视频二进制数据
-                rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
-                new_title = re.sub(rstr, "_", title)  # 过滤不能作为文件名的字符，替换为下划线
                 c = '%s.mp4' % new_title  # 视频文件的命名
                 file = open(temp_path + c, 'wb')  # 创建open对象
                 file.write(data)  # 写入数据
                 file.close()  # 关闭
                 print(title+"视频下载成功！")
             with open('./downloaded_url/video_url.txt', 'a') as f:
-                f.write(video_url+'\n')
+                f.write(item_id+'\n')
         else:print('请输入正确的分享链接！')
 
 # while 1:
@@ -83,7 +83,7 @@ def download2(item_id):
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36'
     }
     response = requests.get(url, headers=headers)
-    title = re.findall('<title data-react-helmet="true">(.*?)- 抖音</title>', response.text)[0]
+    # title = re.findall('<title data-react-helmet="true">(.*?)- 抖音</title>', response.text)[0]
     html_data = re.findall('<script id="RENDER_DATA" type="application/json">(.*?)</script', response.text)[0]
     # 解码  ---> requests简单使用 方法 系统课程都教授了
     # requests.utils.unquote 解码  requests.utils.quote 编码
@@ -97,6 +97,7 @@ def download2(item_id):
             if 'detail' in json_data[k]['aweme']:
                 video_url = 'https:' + \
                             json_data[k]['aweme']['detail']['video']['bitRateList'][0]['playAddr'][0]['src']
+                title = json_data[k]['aweme']['detail']['desc']
             else:
                 raise ValueError('video_url 取值不正确')
     return video_url,title,headers
@@ -113,7 +114,7 @@ if __name__ == '__main__':
     address='https://v.douyin.com/h1Gy9E3/'
     address='https://v.douyin.com/rEbQXhc/'
     preix="https://v.douyin.com/"
-    address_lis=['hmN9N97','hVeQg6a']
+    address_lis=['hmN9N97','hVeQg6a','keraxVk','k8MuMTY','kRykArB']
     for d in address_lis:
         address="%s%s/"%(preix,d)
         dy(address)
