@@ -173,7 +173,6 @@ def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMissi
                 # elem=elem.find_element_by_xpath('//button[contains(@class,"bcc-button get-challenge")]//span')
                 isward=elem.get_attribute("textContent")
                 if isward=="待领奖":
-                    continue
                     driver.execute_script("arguments[0].click();", elem)
                     #todo 点击领奖之后还有一步
                     print('领取奖励成功')
@@ -241,7 +240,7 @@ def main(args):
     # minsheng2_huaji3=['127.0.0.1:9229','127.0.0.1:9228','127.0.0.1:9227','127.0.0.1:9226']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
     if args.istest:
-        ip_lis=['127.0.0.1:9121']
+        ip_lis=['127.0.0.1:9124']
         file_nm='./videoB_url_test.txt'
     if args.issave:
         file = open(file_nm, 'w')
@@ -314,8 +313,8 @@ def main(args):
             args.ip = ip
             try:
                 driver, driver_service = init_driver(args)
-                get_core_data(driver,ip,date)
-                join_act(driver)
+                # get_core_data(driver,ip,date)
+                # join_act(driver)
                 get_award(driver)
                 pid = get_pid(args)
                 driver.quit()

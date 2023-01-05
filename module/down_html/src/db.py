@@ -38,6 +38,7 @@ if args.video_addr == 'suiji': args.video_addr = random.choice(["/有意思的�
 if args.video_addr == 'gaoxiaozuqiu': args.video_addr = '/搞笑足球'
 if args.video_addr == 'zuqiu': args.video_addr = '/足球'
 if args.video_addr == 'lol': args.video_addr = '/LOL'
+if args.video_addr == 'movie': args.video_addr = '/电影解说'
 
 pwd_dir = os.getcwd()
 print("pwd_dir:", pwd_dir)
@@ -167,8 +168,9 @@ def publish_bilibili(args, driver, path_mp4):
     # 选择标签
     time.sleep(2)
     try:
-        driver.find_element_by_xpath(
-            '//*[text()="参与话题："]/..//*[@class="tag-topic-list"]/span[1]//*[@class="hot-tag-item"]').click()
+        element=driver.find_element_by_xpath(
+            '//*[text()="参与话题："]/..//*[@class="tag-topic-list"]/span[1]//*[@class="hot-tag-item"]')
+        driver.execute_script("arguments[0].click();", element)
     except Exception as e:
         print(e)
     for label in args.video_label.strip().split('#'):
@@ -213,7 +215,6 @@ def main(args,driver):
         if (".mp4" in str(i)):
             path_mp4 = str(i)
         print("检查到视频路径：" + path_mp4)
-        # publish_bilibili(driver, path_mp4)
         publish_bilibili(args, driver, path_mp4)
         shutil.move(path_mp4, move_dir)
         idx += 1

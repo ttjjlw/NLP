@@ -216,10 +216,13 @@ def get_pid(args):
     return None
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
+    #kYE2asg 于东来 h9uWDc5 电影解说
     dic_url={
         '三体': "https://v.douyin.com/h9uWDc5/",
         '搞笑足球': "https://v.douyin.com/hAGB8EA/",
+        '电影解说': "https://v.douyin.com/h9uWDc5/",
         '名人大咖  ': "https://v.douyin.com/hrvcbE6/",
+        '名人大咖   ': "https://v.douyin.com/kYE2asg/",
         '爆笑':'https://v.douyin.com/hFjyf2B/',
              '有趣的故事':"MS4wLjABAAAA-wxCgkOlTyeUUENqTmsh6aOLOVOOniShqWtf6lvYNe4fE1GD_K_PvrrCdcBCQH7n",
              '有趣的故事 ':"https://v.douyin.com/h8xHqDn/",
@@ -233,10 +236,12 @@ if __name__ == '__main__':
     if args.istest:
         dic_url={'搞笑足球  ': "https://v.douyin.com/hAGB8EA/"}
     #  '电影解说':"https://v.douyin.com/hNxCfns/"
+    not_use=["LOL",'爆笑','怀旧故事']
     driver,driver_service=driver_init(args)
     try:
         for name,url in dic_url.items():
             name=name.strip()
+            if name in not_use:continue
             print("即将下载%s视频..."%name)
             args.user_id=get_user_id(url.strip())
             args.save_path='./'+name
