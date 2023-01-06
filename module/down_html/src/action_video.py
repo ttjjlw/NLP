@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.service import Service
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser = argparse.ArgumentParser()
-parser.add_argument('--ip', type=str, default='127.0.0.1:9122')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9123')
 parser.add_argument('--isheadless', type=int, default=1)
 parser.add_argument('--istest', type=int, default=1)
 parser.add_argument('--isplay', type=int, default=0)
@@ -103,6 +103,8 @@ def to_sec(duration):
 
 
 def play_video(driver, url):
+    driver.get("https://member.bilibili.com/platform/upload-manager/article?page=1")
+    time.sleep(1)
     driver.get(url)
 
     tt = driver.find_element_by_xpath(
@@ -124,10 +126,20 @@ def play_video(driver, url):
         driver.execute_script("arguments[0].click();", element)
     element = driver.find_element_by_xpath('// * // span[ @ title = "点赞（Q）"]/following-sibling::span[1]')
     if element.get_attribute("class") == "coin":
-        driver.execute_script("arguments[0].click();", element)
-        elem=driver.find_element_by_xpath('//*[@class="bi-btn" and text()="确定"]')
+        try:
+            driver.execute_script("arguments[0].click();", element)
+            elem=driver.find_element_by_xpath('//*[@class="bi-btn" and text()="确定"]')
+            driver.execute_script("arguments[0].click();", elem)
+        except Exception as e:
+            print(e)
+            print('点击投币确认按钮失败，大概率是没登录')
+    # 点广告
+    try:
+        elem = driver.find_element_by_xpath('// * [ @ class = "vcd"]')
         driver.execute_script("arguments[0].click();", elem)
-
+    except Exception as e:
+        print(e)
+        print('点击广告失败')
     time.sleep(duration * 0.2*play_rate)
     return duration*play_rate
 
@@ -156,26 +168,32 @@ def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMissi
     try:
         driver.get(url)
         time.sleep(3)
-        elem=driver.find_element_by_xpath('//*[@class="desc" and text()="待领取"]/following-sibling::*[@class="coin-number"]')
-        jine=float(elem.get_attribute("textContent"))
-        if jine>0:
+        # elem=driver.find_element_by_xpath('//*[@class="desc" and text()="待领取"]/following-sibling::*[@class="coin-number"]')
+        # jine=float(elem.get_attribute("textContent"))
+        if 1:
             jiesu=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="已结束"]')
             ing=driver.find_element_by_xpath('//*[@class="select-by-item"]//*[text()="进行中"]')
             baokuang=driver.find_element_by_xpath('//*[@class="select-by-task"]//*[text()="爆款"]')
-            for elem in [jiesu,ing,baokuang]:
+            fans=driver.find_element_by_xpath('//*[@class="select-by-task"]//*[text()="涨粉"]')
+            for elem in [jiesu,ing,baokuang,fans]:
                 isselect=elem.get_attribute("class")
                 if isselect=="unselected":
                     driver.execute_script("arguments[0].click();", elem)
 
             lis=driver.find_elements_by_xpath('//*[@class="project-content"]/div')
             for idx,li in enumerate(lis):
+                if idx ==len(lis)-1:break
                 elem = li.find_element_by_xpath('//*[@class="project-content"]/div[%d]//*[contains(@class,"bcc-button get-challenge")]//span' % (idx + 2))
+                date=li.find_element_by_xpath('//*[@class="project-content"]/div[%d]//div'%(idx + 2)).get_attribute('id')
                 # elem=elem.find_element_by_xpath('//button[contains(@class,"bcc-button get-challenge")]//span')
                 isward=elem.get_attribute("textContent")
                 if isward=="待领奖":
                     driver.execute_script("arguments[0].click();", elem)
-                    #todo 点击领奖之后还有一步
-                    print('领取奖励成功')
+                    #todo 点击领奖之后还有一步 待验证
+                    elem=li.find_element_by_xpath('//*[@id=%s]//*[text()="领奖并授权"]'%date)
+                    driver.execute_script("arguments[0].click();", elem)
+                    print('%s期领取奖励成功'%date)
+
                 elif isward=="已领奖":
                     break
     except Exception as e:
@@ -240,7 +258,7 @@ def main(args):
     # minsheng2_huaji3=['127.0.0.1:9229','127.0.0.1:9228','127.0.0.1:9227','127.0.0.1:9226']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
     if args.istest:
-        ip_lis=['127.0.0.1:9225',"127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224']
+        ip_lis=['127.0.0.1:9223']
         file_nm='./videoB_url_test.txt'
     if args.issave:
         file = open(file_nm, 'w')
@@ -313,8 +331,8 @@ def main(args):
             args.ip = ip
             try:
                 driver, driver_service = init_driver(args)
-                # get_core_data(driver,ip,date)
-                # join_act(driver)
+                get_core_data(driver,ip,date)
+                join_act(driver)
                 get_award(driver)
                 pid = get_pid(args)
                 driver.quit()
