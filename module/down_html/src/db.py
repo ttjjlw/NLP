@@ -11,9 +11,9 @@ import argparse, random
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser = argparse.ArgumentParser()
-parser.add_argument('--video_addr', type=str, default="gaoxiaozuqiu")
+parser.add_argument('--video_addr', type=str, default="minren")
 parser.add_argument('--video_label', type=str, default='label1,label2')
-parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9222')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=0)
 parser.add_argument('--num', type=int, default=1)
@@ -207,13 +207,16 @@ def main(args,driver):
 
 
     path = pathlib.Path(catalog_mp4)
-
+    file_path=list(path.iterdir())
+    random.shuffle(file_path)
     # 视频地址获取
     path_mp4 = ""
     idx = 0
-    for i in path.iterdir():
+    for i in file_path:
         if (".mp4" in str(i)):
             path_mp4 = str(i)
+        else:
+            continue
         print("检查到视频路径：" + path_mp4)
         publish_bilibili(args, driver, path_mp4)
         shutil.move(path_mp4, move_dir)

@@ -240,7 +240,7 @@ def main(args):
     # minsheng2_huaji3=['127.0.0.1:9229','127.0.0.1:9228','127.0.0.1:9227','127.0.0.1:9226']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
     if args.istest:
-        ip_lis=['127.0.0.1:9124']
+        ip_lis=['127.0.0.1:9225',"127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224']
         file_nm='./videoB_url_test.txt'
     if args.issave:
         file = open(file_nm, 'w')

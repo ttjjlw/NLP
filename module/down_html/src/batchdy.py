@@ -31,7 +31,7 @@ import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--save_path', type=str, default="./有趣的故事")
-parser.add_argument('--isheadless', type=int, default=0)
+parser.add_argument('--isheadless', type=int, default=1)
 parser.add_argument('--istest', type=int, default=0)
 parser.add_argument('--ip', type=str, default="127.0.0.1:9220")
 parser.add_argument('--user_id', type=str,
@@ -94,7 +94,7 @@ def main(args,driver):
         downloaded_url=set()
 
     def drop_down():
-        for x in range(1, 40, 2):
+        for x in range(1, 120, 2):
             time.sleep(1)
             j = x / 9
             js = 'document.documentElement.scrollTop = document.documentElement.scrollHeight * %f' % j
@@ -163,14 +163,14 @@ def main(args,driver):
             new_title = re.sub(
                 u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“！？【】——。])", "", title)
             if new_title.strip() == '': continue
-            # if title_is_exists(new_title,idx,save_path):continue
+            if title_is_exists(new_title,idx,save_path):continue
+            new_title = '/%s.mp4' % new_title  # 视频文件的命名
             video_response = requests.get(url=video_url, headers=headers)  # 发送下载视频的网络请求
             if video_response.status_code == 200:  # 如果请求成功
                 z = os.getcwd()
                 data = video_response.content  # 获取返回的视频二进制数据
                 rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
-
-                file = open(save_path + new_title, 'wb')  # 创建open对象
+                file = open(save_path + '/'+ new_title, 'wb')  # 创建open对象
                 file.write(data)  # 写入数据
                 file.close()  # 关闭
                 print(str(idx) + new_title + " 视频下载成功！")
@@ -183,7 +183,6 @@ def main(args,driver):
 def title_is_exists(new_title,idx,save_path):
 
     title_nolabel = new_title.split("#")[0]
-    new_title = '/%s.mp4' % new_title  # 视频文件的命名
     if os.path.exists(save_path + new_title) or os.path.exists(save_path + "_move" + new_title) or os.path.exists(
             save_path + "_move" + '/%s.mp4' % title_nolabel):
         print("%s%s 已下载过" % (str(idx), new_title))
@@ -234,7 +233,7 @@ if __name__ == '__main__':
              'LOL':"https://v.douyin.com/h2yWMCP/",
              '怀旧故事':'https://v.douyin.com/h8x7pQG/'}
     if args.istest:
-        dic_url={'搞笑足球  ': "https://v.douyin.com/hAGB8EA/"}
+        dic_url={'名人大咖   ': "https://v.douyin.com/kYE2asg/",}
     #  '电影解说':"https://v.douyin.com/hNxCfns/"
     not_use=["LOL",'爆笑','怀旧故事']
     driver,driver_service=driver_init(args)
