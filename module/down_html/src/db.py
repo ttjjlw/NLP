@@ -13,7 +13,7 @@ import argparse, random
 parser = argparse.ArgumentParser()
 parser.add_argument('--video_addr', type=str, default="minren")
 parser.add_argument('--video_label', type=str, default='label1,label2')
-parser.add_argument('--ip', type=str, default='127.0.0.1:9222')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=0)
 parser.add_argument('--num', type=int, default=1)
@@ -94,6 +94,7 @@ def publish_bilibili(args, driver, path_mp4):
     # driver.refresh()
     driver.get("https://member.bilibili.com/platform/upload/video/frame")
     title = path_mp4.split('\\')[-1].split("#")[0]
+    title=title.strip().replace('.mp4','')
     label = path_mp4.split('.')[0].split('\\')[-1].split("#")[1:]
     label = [re.sub(u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a])", "", l) for l in label if
              "dou" not in l and "抖音" not in l and len(l.strip()) > 1]
