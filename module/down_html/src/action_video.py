@@ -156,7 +156,7 @@ def join_act(driver,url='https://member.bilibili.com/platform/allowance/incomeCe
                     driver.execute_script("arguments[0].click();", elem)
                     # elem.click()
                 else:
-                    print(text)
+                    if idx==0: print(text)
             except Exception as e:
                 print(e)
         print("自动参加活动成功")
@@ -196,6 +196,7 @@ def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMissi
 
                 elif isward=="已领奖":
                     break
+        print('没有奖励可领取')
     except Exception as e:
         print(e)
         print('领取奖励失败')
