@@ -10,12 +10,12 @@ from selenium.webdriver.chrome.service import Service
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser = argparse.ArgumentParser()
-parser.add_argument('--ip', type=str, default='127.0.0.1:9123')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9121')
 parser.add_argument('--isheadless', type=int, default=1)
 parser.add_argument('--istest', type=int, default=1)
-parser.add_argument('--isplay', type=int, default=0)
+parser.add_argument('--isplay', type=int, default=1)
 parser.add_argument('--issave', type=int, default=0)
-parser.add_argument('--isgetdata', type=int, default=1)
+parser.add_argument('--isgetdata', type=int, default=0)
 
 args, _ = parser.parse_known_args()
 if args.istest:args.isheadless=0
