@@ -13,7 +13,7 @@ import argparse, random
 parser = argparse.ArgumentParser()
 parser.add_argument('--video_addr', type=str, default="minren")
 parser.add_argument('--video_label', type=str, default='label1,label2')
-parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9224')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=0)
 parser.add_argument('--num', type=int, default=1)
@@ -41,7 +41,7 @@ if args.video_addr == 'lol': args.video_addr = '/LOL'
 if args.video_addr == 'movie': args.video_addr = '/电影解说'
 
 pwd_dir = os.getcwd()
-print("pwd_dir:", pwd_dir)
+# print("pwd_dir:", pwd_dir)
 args.video_addr = pwd_dir + args.video_addr
 args.video_label = args.video_addr.split('/')[-1].strip()
 
