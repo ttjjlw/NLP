@@ -249,6 +249,33 @@ def get_pid(args):
             return pid
     return None
 
+def get_tjl_url(args,ip):
+    file=open('./tjlB_url.txt','w')
+    try:
+        args.ip=ip
+        driver,driver_service=init_driver(args)
+        for i in range(1,33):
+            url = "https://member.bilibili.com/platform/upload-manager/article?page=%d"%i
+            open_url(driver,url=url)
+            save_video_url(driver,file)
+        driver.quit()
+        driver_service.stop()
+        pid = get_pid(args)
+        if pid:
+            os.popen("taskkill /pid %s -t -f" % pid)
+            print("%s的进程被杀死" % args.ip)
+    except Exception as e:
+        print(e)
+        print('获取tjl_url失败')
+        file.close()
+        pid = get_pid(args)
+        if pid:
+            os.popen("taskkill /pid %s -t -f" % pid)
+        else:
+            print("%s 的进程没有杀死" % args.ip)
+
+
+
 
 def main(args):
     date=datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分')
@@ -261,6 +288,7 @@ def main(args):
     if args.istest:
         ip_lis=['127.0.0.1:9223']
         file_nm='./videoB_url_test.txt'
+    get_tjl_url(args,ip='127.0.0.1:9121')
     if args.issave:
         file = open(file_nm, 'w')
         for ip in ip_lis:
