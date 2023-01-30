@@ -11,9 +11,9 @@ import argparse, random
 # chrome.exe --remote-debugging-port=9222 --user-data-dir=“D:\chromedata” wode  9223 dide
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\chromedata" --headless --disable-gpu --no-sandbox --disable-popup-blocking
 parser = argparse.ArgumentParser()
-parser.add_argument('--video_addr', type=str, default="minren")
+parser.add_argument('--video_addr', type=str, default="/tjl02")
 parser.add_argument('--video_label', type=str, default='label1,label2')
-parser.add_argument('--ip', type=str, default='127.0.0.1:9224')
+parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
 parser.add_argument('--isheadless', type=int, default=0)
 parser.add_argument('--num', type=int, default=1)
@@ -42,8 +42,12 @@ if args.video_addr == 'movie': args.video_addr = '/电影解说'
 
 pwd_dir = os.getcwd()
 # print("pwd_dir:", pwd_dir)
-args.video_addr = pwd_dir + args.video_addr
+
 args.video_label = args.video_addr.split('/')[-1].strip()
+if args.video_addr.startswith('/tjl') or args.video_addr.startswith('./tjl'): args.video_label = '名人大咖#胖东来#刘强东#王健林#马云'
+
+args.video_addr = pwd_dir + args.video_addr
+
 
 move_dir = args.video_addr + "_move"
 
@@ -209,7 +213,16 @@ def main(args,driver):
 
     path = pathlib.Path(catalog_mp4)
     file_path=list(path.iterdir())
-    random.shuffle(file_path)
+    # random.shuffle(file_path)
+
+    if not os.path.exists('./uploaded/'):
+        os.makedirs('./uploaded/')
+    try:
+        with open('./uploaded/'+ args.ip.split(':')[-1].strip()+'.txt','r') as f:
+            lines=f.readlines()
+            title_set=set([u.strip() for u in lines ])
+    except:
+        title_set={}
     # 视频地址获取
     path_mp4 = ""
     idx = 0
@@ -218,9 +231,18 @@ def main(args,driver):
             path_mp4 = str(i)
         else:
             continue
+        title = path_mp4.split('\\')[-1].split("#")[0]
+        if title in title_set:
+            os.remove(path_mp4)
+            continue
         print("检查到视频路径：" + path_mp4)
         publish_bilibili(args, driver, path_mp4)
-        shutil.move(path_mp4, move_dir)
+        try:
+            shutil.move(path_mp4, move_dir)
+        except Exception as e:
+            print(e)
+        with open('./uploaded/' + args.ip.split(':')[-1].strip() + '.txt', 'a') as f:
+            f.write(title+'\n')
         idx += 1
         if idx > args.num - 1: break
     if idx==0:ValueError("视频目录为空，请先下载视频")
@@ -256,6 +278,8 @@ def get_pid(args):
 
 
 if __name__ == '__main__':
+    # shutil.move(r'D:\code\pycharm\project1\github\NLP\module\down_html\src\tjl02\08年最惨痛的春运教训，4万解放军紧急出动（下）.mp4', './tjl02_move/')
+    # exit(0)#todo
     print(datetime.datetime.now().strftime('%Y年%m月%d号 %H点%M分'))
     print("ip:", args.ip)
     # if args.ip[-4:]=='9222':exit(0)

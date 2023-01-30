@@ -18,7 +18,7 @@ parser.add_argument('--issave', type=int, default=1)
 parser.add_argument('--isgetdata', type=int, default=0)
 
 args, _ = parser.parse_known_args()
-if args.istest:args.isheadless=0
+if args.istest:args.isheadless=1
 print(args)
 
 def init_driver(args):
@@ -56,6 +56,7 @@ def init_driver(args):
 
 def open_url(driver, url="https://member.bilibili.com/platform/upload-manager/article?page=1"):
     driver.get(url)
+    time.sleep(1)
     return
 
 
@@ -250,14 +251,16 @@ def get_pid(args):
     return None
 
 def get_tjl_url(args,ip):
-    file=open('./tjlB_url.txt','w')
+    file=open('./tjlB_url.txt','a')
     try:
         args.ip=ip
         driver,driver_service=init_driver(args)
-        for i in range(1,33):
+        for i in range(1,2):
+            print('下载第%d页视频中...'%i)
             url = "https://member.bilibili.com/platform/upload-manager/article?page=%d"%i
             open_url(driver,url=url)
             save_video_url(driver,file)
+        file.close()
         driver.quit()
         driver_service.stop()
         pid = get_pid(args)
@@ -288,8 +291,8 @@ def main(args):
     if args.istest:
         ip_lis=['127.0.0.1:9223']
         file_nm='./videoB_url_test.txt'
-    get_tjl_url(args,ip='127.0.0.1:9121')
     if args.issave:
+        get_tjl_url(args, ip='127.0.0.1:9121')
         file = open(file_nm, 'w')
         for ip in ip_lis:
             try:
@@ -300,6 +303,7 @@ def main(args):
                 print('ip为：%s的视频链接下载完毕' % ip)
                 driver.quit()
                 driver_service.stop()
+                file.close()
                 pid = get_pid(args)
                 if pid:
                     os.popen("taskkill /pid %s -t -f" % pid)
