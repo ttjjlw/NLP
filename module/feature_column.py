@@ -52,6 +52,8 @@ def test_reshaping():
 #bucketized_column
 def test_numeric_cols_to_bucketized():
     price =tf.feature_column.numeric_column('price')   #定义连续值特征列
+    #不能没有数据字段，就定义特征列字段
+    # price1 =tf.feature_column.numeric_column('price1')   #定义连续值特征列
 
     #将连续值特征列转化成离散值特征列,离散值共分为3段：小于3、3~5之间、大于5
 
@@ -62,10 +64,16 @@ def test_numeric_cols_to_bucketized():
        'price': [[2.], [6.],[4.]],
     }
     #生成输入张量
-    net =tf.feature_column.input_layer(features,[ price,price_bucketized])
+    net =tf.feature_column.input_layer(features,[price,price_bucketized])
+    net1=[]
+    for c in [price,price_bucketized]:
+        f=tf.feature_column.input_layer(features,c)
+        net1.append(f)
+    net1=tf.concat(net1,axis=-1)
     with tf.Session() as sess:                         #建立会话输出特征
         sess.run(tf.global_variables_initializer())
-        print(net.eval())
+        print('net:',net.eval())
+        print('net1:',net1.eval())
 # test_numeric_cols_to_bucketized()
 # array([[2. 1. 0. 0.]
 #  [6. 0. 0. 1.]
@@ -230,9 +238,33 @@ def sequence_categorical_column_with_vocabulary_list():
         print('length2:',sess.run(sequence_length2))
 
 
+def categorical_column_with_vocabulary_file_test():
+    # 特征数据
+    features = {
+        'department': [['sport', 'sport'], ['drawing', 'gardening'],['travelling','lll']],
+    }
+    # 特征列
+    department = tf.feature_column.categorical_column_with_vocabulary_list('department', ['sport', 'drawing', 'gardening', 'travelling','lll'], dtype=tf.string)
+    department = tf.feature_column.indicator_column(department)
+    # 组合特征列
+    columns = [department]
+    # 输入层（数据，特征列）
+    inputs = tf.feature_column.input_layer(features, columns)
+    # 初始化并运行
+    init = tf.global_variables_initializer()
+    sess=tf.Session()
+    sess.run(tf.tables_initializer())
+    sess.run(init)
+
+    v = sess.run(inputs)
+    print(v)
+    sess.close()
 if __name__ == '__main__':
     # test_one_column()
     # test_order()
+    # test_numeric_cols_to_bucketized()
     # test_crossed()
     # share_embed()
-    sequence_categorical_column_with_vocabulary_list()
+    # sequence_categorical_column_with_vocabulary_list()
+    # test_numeric_cols_to_bucketized()
+    categorical_column_with_vocabulary_file_test()
