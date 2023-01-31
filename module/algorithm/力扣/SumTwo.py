@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-#  ------------------------------------------------------------------------------------------------
-#  Descripe: 
-#  Auther: jialiangtu 
-#  CopyRight: Tencent Company
-# ------------------------------------------------------------------------------------------------
 from typing import List, Callable, Tuple, Any, Optional
 
 #题意：仅有一组满足情况

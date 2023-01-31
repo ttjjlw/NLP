@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-#  ------------------------------------------------------------------------------------------------
-#  Descripe: 
-#  Auther: jialiangtu 
-#  CopyRight: Tencent Company
-# ------------------------------------------------------------------------------------------------
 import tensorflow as tf
 import numpy as np
 import pandas as pd

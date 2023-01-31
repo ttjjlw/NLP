@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-#  ------------------------------------------------------------------------------------------------
-#  Descripe: 
-#  Auther: jialiangtu 
-#  CopyRight: Tencent Company
-# ------------------------------------------------------------------------------------------------
 def topk_accuracy(label,pred,k):
 
     max_k_preds = pred.argsort(axis=1)[:, -k:][:, ::-1]  # 得到top-k label

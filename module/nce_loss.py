@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-#  ------------------------------------------------------------------------------------------------
-#  Descripe: 
-#  Auther: jialiangtu 
-#  CopyRight: Tencent Company
-# ------------------------------------------------------------------------------------------------
 import tensorflow as tf
 
 #weights 为 utube 网络中的item vector

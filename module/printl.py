@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-#  ------------------------------------------------------------------------------------------------
-#  Descripe: 
-#  Auther: jialiangtu 
-#  CopyRight: Tencent Company
-# ------------------------------------------------------------------------------------------------
 def printl(*args):
     strig=[str(i) for i in args]
     string=' '.join(strig)

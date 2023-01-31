@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-#  ------------------------------------------------------------------------------------------------
-#  Descripe: 
-#  Auther: jialiangtu 
-#  CopyRight: Tencent Company
-# ------------------------------------------------------------------------------------------------
 import tensorflow as tf
 if tf.__version__<'2.0':
     table = tf.contrib.lookup.MutableHashTable(key_dtype=tf.string,
