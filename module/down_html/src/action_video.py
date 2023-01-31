@@ -190,7 +190,6 @@ def get_award(driver,url='https://member.bilibili.com/platform/allowance/upMissi
                 isward=elem.get_attribute("textContent")
                 if isward=="待领奖":
                     driver.execute_script("arguments[0].click();", elem)
-                    #todo 点击领奖之后还有一步 待验证
                     elem=li.find_element_by_xpath('//*[@id=%s]//*[text()="领奖并授权"]'%date)
                     driver.execute_script("arguments[0].click();", elem)
                     print('%s期领取奖励成功'%date)
@@ -303,7 +302,6 @@ def main(args):
                 print('ip为：%s的视频链接下载完毕' % ip)
                 driver.quit()
                 driver_service.stop()
-                file.close()
                 pid = get_pid(args)
                 if pid:
                     os.popen("taskkill /pid %s -t -f" % pid)
