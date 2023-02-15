@@ -37,7 +37,7 @@ def dy(txt):
             video_response = requests.get(url=video_url, headers=headers)  # 发送下载视频的网络请求
             if video_response.status_code == 200:  # 如果请求成功
                 z = os.getcwd()
-                temp_path = z + '/有意思的视频/'  # 在程序当前文件夹下建立文件夹
+                temp_path = z + '/有意思的视频x/'  # 在程序当前文件夹下建立文件夹
                 if not os.path.exists(temp_path):
                     os.makedirs(temp_path)
                 data = video_response.content  # 获取返回的视频二进制数据
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     address='https://v.douyin.com/h1Gy9E3/'
     address='https://v.douyin.com/rEbQXhc/'
     preix="https://v.douyin.com/"
-    address_lis=['kh4BCGD','kU9JEY2']
+    address_lis=['BPg585B','BPgafsr']
     for d in address_lis:
         address="%s%s/"%(preix,d)
         dy(address)

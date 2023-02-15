@@ -34,24 +34,28 @@ def video_clip(tmp_dir,save_dir,title):
     video_end = video.subclip(start, start + 0.1)
     # 拼接视频
     final_clip = concatenate_videoclips([video_start, video, video_end])
-    if not os.path.exists("%s%s.mp4" % (save_dir, title)):
-        final_clip.to_videofile("%s%s.mp4"%(save_dir,title), fps=24, remove_temp=True, audio_codec='aac')
+    new_title = re.sub(
+        u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“”！？【】——。])", "", title)
+    if not os.path.exists("%s%s.mp4" % (save_dir, new_title)):
+        final_clip.to_videofile("%s%s.mp4"%(save_dir,new_title), fps=24, remove_temp=True, audio_codec='aac')
     with open(f'{tmp_dir}dealed_url.txt','a') as f:
         f.write(url+'\n')
     video.close()
     if os.path.exists("%s%s.mp4" % (tmp_dir, title)):os.remove("%s%s.mp4" % (tmp_dir, title))
 
 def copy_file(save_dir,title):
+    new_title  = re.sub(
+        u"([^\u4e00-\u9fa5\u0030-\u0039\u0041-\u005a\u0061-\u007a#!~%&:;\(\)?,\"\.，《》：“”！？【】——。])", "", title)
     for i in range(6):
         dest_dir=save_dir[:-1]+'0%d'%i+save_dir[-1]
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        if not os.path.exists("%s%s.mp4" % (dest_dir, title)):
-            shutil.copy("%s%s.mp4"%(save_dir,title),dest_dir)
+        if not os.path.exists("%s%s.mp4" % (dest_dir, new_title)):
+            shutil.copy("%s%s.mp4"%(save_dir,new_title),dest_dir)
 
 
 if __name__ == '__main__':
-    #根据tjlb_url.txt中的地址下载视频到tjl目录，曾经下载过的(由tmp/dealed_url.txt记载)不会再下载
+    #根据tjlB_url.txt中的地址下载视频到tjl目录，曾经下载过的(由tmp/dealed_url.txt记载)不会再下载
     tmp_dir = './tmp/'
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)

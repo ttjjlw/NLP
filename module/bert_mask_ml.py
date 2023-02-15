@@ -37,6 +37,13 @@ class SuperBertEmbedding(Feature):
         numerous.reader.ControlPlaceholder(self.is_train, training_phase=True, inference_phase=False)
         self.mask_embedings=tf.compat.v1.get_variable(name='mask_embedding',dtype=tf.float32,shape=[self.embedding_size],initializer=tf.random_normal_initializer())
     def get_multi_hot(self, idx_tensor, total_num):
+        '''
+        For example, if `idx_tensor` is `[1, 2, 3]` and `total_num` is `5`, the resulting `multi_hot` tensor would be `[0, 1, 1, 1, 0]`,
+         indicating that classes 2, 3, and 4 are present, but classes 1 and 5 are not present.
+        :param idx_tensor:
+        :param total_num:
+        :return:
+        '''
         one_hot = tf.one_hot(idx_tensor, depth=total_num)
         multi_hot = tf.reduce_sum(one_hot, axis=1)
         return multi_hot

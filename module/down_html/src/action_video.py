@@ -137,7 +137,7 @@ def play_video(driver, url):
     # 点广告
     try:
         elem = driver.find_element_by_xpath('// * [ @ class = "vcd"]')
-        driver.execute_script("arguments[0].click();", elem)
+        # driver.execute_script("arguments[0].click();", elem) #暂时先注销点击广告
     except Exception as e:
         print(e)
         print('点击广告失败')
