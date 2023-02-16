@@ -4,12 +4,13 @@ import re,os,random,shutil
 def download_video(tmp_dir,url='https://www.bilibili.com/video/BV1Z841137Rh/'):
     p=os.popen('you-get --format=dash-flv480 -o %s %s'%(tmp_dir,url))
     data = p.buffer.read().decode(encoding='utf-8')
+    if not len(data):return ''
     # data=p.read(decode='utf-8')
     title=re.findall('title:\s+(.+)',data)
     try:
         print(title[0].strip())
     except:
-        print(data)
+        print('data:',data)
     return title[0].strip()
 def merge(tmp_dir,save_dir,title,url):
     title1='%s%s[00].mp4'%(tmp_dir,title)
@@ -19,6 +20,8 @@ def merge(tmp_dir,save_dir,title,url):
         audio = AudioFileClip(title2)
         video_merge = video.set_audio(audio)
         video_merge.write_videofile("%s%s.mp4"%(save_dir,title),audio_codec='aac')
+        video.close()
+        audio.close()
     if os.path.exists(f'{title1}'):os.remove(f'{title1}')
     if os.path.exists(f'{title2}'):os.remove(f'{title2}')
     if os.path.exists(f'{tmp_dir}{title}.cmt.xml'):os.remove(f'{tmp_dir}{title}.cmt.xml')
@@ -73,6 +76,7 @@ if __name__ == '__main__':
         url=url.strip()
         if url in url_set:continue
         title=download_video(tmp_dir,url=url)
+        if not title:continue
         title = title.replace('/', '-')
         merge(tmp_dir,tmp_dir,title,url)
         video_clip(tmp_dir,save_dir,title)
