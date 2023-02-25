@@ -31,7 +31,7 @@ import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--save_path', type=str, default="./有趣的故事")
-parser.add_argument('--isheadless', type=int, default=1)
+parser.add_argument('--isheadless', type=int, default=0)
 parser.add_argument('--istest', type=int, default=0)
 parser.add_argument('--ip', type=str, default="127.0.0.1:9220")
 parser.add_argument('--user_id', type=str,

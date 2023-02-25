@@ -18,7 +18,7 @@ parser.add_argument('--issave', type=int, default=1)
 parser.add_argument('--isgetdata', type=int, default=0)
 
 args, _ = parser.parse_known_args()
-if args.istest:args.isheadless=1
+if args.istest:args.isheadless=0
 print(args)
 
 def init_driver(args):
@@ -254,7 +254,7 @@ def get_tjl_url(args,ip):
     try:
         args.ip=ip
         driver,driver_service=init_driver(args)
-        for i in range(1,2):
+        for i in range(1,2):#todo
             print('下载第%d页视频中...'%i)
             url = "https://member.bilibili.com/platform/upload-manager/article?page=%d"%i
             open_url(driver,url=url)
@@ -288,7 +288,7 @@ def main(args):
     # minsheng2_huaji3=['127.0.0.1:9229','127.0.0.1:9228','127.0.0.1:9227','127.0.0.1:9226']#7965(足球), 7962（lol）,7963(三体),0739（怀旧）(1265need adentity)
     # ip_lis=minsheng2_huaji3+ip_lis
     if args.istest:
-        ip_lis=['127.0.0.1:9223']
+        ip_lis=['127.0.0.1:9225',"127.0.0.1:9222", '127.0.0.1:9223', '127.0.0.1:9224']
         file_nm='./videoB_url_test.txt'
     if args.issave:
         get_tjl_url(args, ip='127.0.0.1:9121')
