@@ -1,5 +1,5 @@
 
-cd D:\code\pycharm\project1\github\NLP\module\down_html\src && d:
+cd D:\Code\pycharmf\project3\github\NLP\module\down_html\src && d:
 set HOUR=%time:~0,2%
 if %HOUR% EQU 19 (
     echo '' > log/logplay9121.txt 2>&1
