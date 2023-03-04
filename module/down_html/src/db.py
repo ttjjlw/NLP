@@ -62,7 +62,7 @@ def init_driver(args):
     if not os.path.exists(chrome_dir):
         os.makedirs(chrome_dir)
     if args.isheadless:
-        cmd = r'chrome.exe ----remote-debugging-address=127.0.0.1 --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking' % (
+        cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking' % (
             port, port)
     else:
         cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s"' % (port, port)
