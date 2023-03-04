@@ -15,7 +15,7 @@ parser.add_argument('--video_addr', type=str, default="/tjl02")
 parser.add_argument('--video_label', type=str, default='label1,label2')
 parser.add_argument('--ip', type=str, default='127.0.0.1:9225')
 parser.add_argument('--video_describe', type=str, default='视频')
-parser.add_argument('--isheadless', type=int, default=0)
+parser.add_argument('--isheadless', type=int, default=1)
 parser.add_argument('--num', type=int, default=1)
 
 args, _ = parser.parse_known_args()
@@ -62,7 +62,7 @@ def init_driver(args):
     if not os.path.exists(chrome_dir):
         os.makedirs(chrome_dir)
     if args.isheadless:
-        cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking' % (
+        cmd = r'chrome.exe ----remote-debugging-address=127.0.0.1 --remote-debugging-port=%s --user-data-dir="D:\chromedata%s" --headless --disable-gpu --no-sandbox --disable-popup-blocking' % (
             port, port)
     else:
         cmd = r'chrome.exe --remote-debugging-port=%s --user-data-dir="D:\chromedata%s"' % (port, port)

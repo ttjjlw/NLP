@@ -114,7 +114,10 @@ if __name__ == '__main__':
     address='https://v.douyin.com/h1Gy9E3/'
     address='https://v.douyin.com/rEbQXhc/'
     preix="https://v.douyin.com/"
-    address_lis=['BPg585B','BPgafsr']
+    address_lis=['SegsHEV','SeTwmdQ','SewsA1E','SewTadx','SLDxxcb','S2TGsKB','SjtcLV6','ShNtjj9']
     for d in address_lis:
-        address="%s%s/"%(preix,d)
-        dy(address)
+        try:
+            address="%s%s/"%(preix,d)
+            dy(address)
+        except Exception as e:
+            print(e)
